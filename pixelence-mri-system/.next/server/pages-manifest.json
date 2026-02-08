@@ -1,1 +1,6 @@
-{"/_app":"pages/_app.js","/_document":"pages/_document.js","/appointments/[id]":"pages/appointments/[id].html","/appointments/create":"pages/appointments/create.html","/dashboard/doctor":"pages/dashboard/doctor.html","/dashboard/finance-user":"pages/dashboard/finance-user.html","/_error":"pages/_error.js","/dashboard/radiographer":"pages/dashboard/radiographer.html","/dashboard/it-admin":"pages/dashboard/it-admin.html","/dashboard/radiologist":"pages/dashboard/radiologist.html","/images/[jobId]":"pages/images/[jobId].html","/dashboard":"pages/dashboard.html","/appointments":"pages/appointments.html","/billing":"pages/billing.html","/reports/[id]":"pages/reports/[id].html","/images/upload":"pages/images/upload.html","/":"pages/index.html","/reports":"pages/reports.html","/settings/license":"pages/settings/license.html","/settings/system":"pages/settings/system.html","/settings/users":"pages/settings/users.html","/404":"pages/404.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/images/[jobId]": "pages/images/[jobId].js"
+}

@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST='{"pages/dashboard/index.js -> ../../components/DashboardRedirect":{"id":8101,"files":["static/chunks/130.3753e3cdc4a3d645.js"]}}';
+self.__REACT_LOADABLE_MANIFEST="{}"
