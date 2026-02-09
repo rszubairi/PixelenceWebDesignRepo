@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "convex": "^1.31.7",
     "cornerstone-core": "^2.6.1",
     "cornerstone-web-image-loader": "^2.1.1",
     "dicom-parser": "^1.8.21"

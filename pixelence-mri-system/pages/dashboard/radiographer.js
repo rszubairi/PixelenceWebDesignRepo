@@ -54,7 +54,7 @@ const RadiographerDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-semibold text-gray-900">Radiographer Dashboard</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Welcome back, {user.name}. Here's your imaging workflow overview.
+            Welcome back, {user?.firstName} {user?.lastName}. Here's your imaging workflow overview.
           </p>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

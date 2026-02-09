@@ -4,9 +4,11 @@ import Layout from '../../components/layout/Layout';
 import StatsCard from '../../components/dashboard/StatsCard';
 import RecentJobs from '../../components/dashboard/RecentJobs';
 import Chart from '../../components/dashboard/Chart';
+import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../contexts/AuthContext';
 
 const DoctorDashboard = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     myReferrals: 8,
     pendingReviews: 3,
@@ -17,10 +19,6 @@ const DoctorDashboard = () => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock data for recent jobs
     const mockJobs = [
       { id: 'JOB-2023-001', patient: 'John Smith', status: 'Under Review', date: '2023-11-15' },
@@ -44,17 +42,14 @@ const DoctorDashboard = () => {
     setChartData(mockChartData);
   }, []);
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <Layout user={user}>
+    <ProtectedRoute allowedRoles={['doctor']}>
+      <Layout user={user}>
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-semibold text-gray-900">Doctor Dashboard</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Welcome back, Dr. {user.name}. Here's your patient referral overview.
+            Welcome back, Dr. {user?.firstName} {user?.lastName}. Here's your patient referral overview.
           </p>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -144,7 +139,8 @@ const DoctorDashboard = () => {
           </div>
         </div>
       </div>
-    </Layout>
+      </Layout>
+    </ProtectedRoute>
   );
 };
 

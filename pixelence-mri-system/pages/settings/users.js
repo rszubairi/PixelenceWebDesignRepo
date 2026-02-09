@@ -71,11 +71,12 @@ const UserManagement = () => {
     setUsers(mockUsers);
   }, []);
 
-  const filteredUsers = users.filter(user => {
-    const matchesFilter = filter === 'all' || user.status === filter;
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.role.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredUsers = users.filter(userItem => {
+    const matchesFilter = filter === 'all' || userItem.status === filter;
+    const userName = userItem.name || `${userItem.firstName || ''} ${userItem.lastName || ''}`.trim();
+    const matchesSearch = userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         userItem.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         userItem.role.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 

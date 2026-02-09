@@ -19,21 +19,27 @@ const Sidebar = ({ userRole }) => {
     ];
 
     const roleSpecificItems = {
-      'Finance User': [
+      'finance-user': [
         { name: 'Billing', href: '/billing', icon: 'credit-card' },
         { name: 'License Management', href: '/settings/license', icon: 'key' },
       ],
-      'IT Administrator': [
+      'it-admin': [
+        { name: 'Images', href: '/images', icon: 'photograph' },
+        { name: 'Billing', href: '/billing', icon: 'credit-card' },
         { name: 'User Management', href: '/settings/users', icon: 'users' },
         { name: 'System Settings', href: '/settings/system', icon: 'cog' },
+        { name: 'License Management', href: '/settings/license', icon: 'key' },
       ],
-      'Radiographer': [
+      'radiographer': [
+        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'Image Upload', href: '/images/upload', icon: 'upload' },
       ],
-      'Radiologist': [
+      'radiologist': [
+        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'Review Queue', href: '/reports/review', icon: 'eye' },
       ],
-      'Doctor': [
+      'doctor': [
+        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'My Appointments', href: '/appointments/my', icon: 'calendar' },
       ],
     };
@@ -90,6 +96,11 @@ const Sidebar = ({ userRole }) => {
         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
           <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+        </svg>
+      ),
+      photograph: (
+        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
         </svg>
       ),
     };

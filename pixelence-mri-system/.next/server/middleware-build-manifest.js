@@ -19,10 +19,15 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/images/[jobId]": [
+    "/dashboard/it-admin": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/images/[jobId].js"
+      "static/chunks/pages/dashboard/it-admin.js"
+    ],
+    "/settings/license": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/settings/license.js"
     ]
   },
   "ampFirstPages": []

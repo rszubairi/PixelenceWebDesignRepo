@@ -54,7 +54,7 @@ const FinanceUserDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-semibold text-gray-900">Finance Dashboard</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Welcome back, {user.name}. Here's your financial overview.
+            Welcome back, {user?.firstName} {user?.lastName}. Here's your financial overview.
           </p>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
