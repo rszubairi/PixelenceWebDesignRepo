@@ -3,16 +3,18 @@ frontend:
   phases:
     preBuild:
       commands:
+        - npm ci
         - npm ci --prefix pixelence-mri-system
     build:
       commands:
-        - npm run build --prefix pixelence-mri-system
+        - npx turbo@2.8.9 run build --filter=pixelence-mri-system
   artifacts:
     baseDirectory: pixelence-mri-system/.next
     files:
       - '**/*'
   cache:
     paths:
+      - node_modules/**/*
       - pixelence-mri-system/node_modules/**/*
   customHeaders:
     - pattern: '**/*'
