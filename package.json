@@ -1,6 +1,7 @@
 {
   "name": "pixelence-repo-root",
   "private": true,
+  "packageManager": "npm@8",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
