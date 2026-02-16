@@ -3,9 +3,9 @@
   "private": true,
   "packageManager": "npm@8",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint"
+    "build": "cd pixelence-mri-system && npm install && npm run build",
+    "dev": "cd pixelence-mri-system && npm run dev",
+    "lint": "cd pixelence-mri-system && npm run lint"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

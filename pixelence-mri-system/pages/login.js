@@ -1,4 +1,4 @@
-mport { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAction } from 'convex/react';
 import { api } from '../convex/_generated/api';
@@ -19,10 +19,10 @@ export default function Login() {
 
     try {
       const user = await login({ email, password });
-      
+
       // Store user data in localStorage
       localStorage.setItem('user', JSON.stringify(user));
-      
+
       // Redirect based on role
       const dashboardRoutes = {
         'doctor': '/dashboard/doctor',
@@ -31,7 +31,7 @@ export default function Login() {
         'finance-user': '/dashboard/finance-user',
         'it-admin': '/dashboard/it-admin',
       };
-      
+
       const redirectPath = dashboardRoutes[user.role] || '/dashboard';
       router.push(redirectPath);
     } catch (err) {
@@ -59,7 +59,7 @@ export default function Login() {
             Sign in to your account
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="rounded-md bg-red-50 p-4">
@@ -119,14 +119,14 @@ export default function Login() {
           <div className="text-sm text-center space-y-2">
             <p className="text-gray-600">Need to set up the system?</p>
             <div className="space-y-1">
-              <a 
-                href="/initialize" 
+              <a
+                href="/initialize"
                 className="text-blue-600 hover:text-blue-500 font-medium block"
               >
                 Initialize Default Admin User
               </a>
-              <a 
-                href="/initialize-users" 
+              <a
+                href="/initialize-users"
                 className="text-blue-600 hover:text-blue-500 font-medium block"
               >
                 Initialize Sample Users

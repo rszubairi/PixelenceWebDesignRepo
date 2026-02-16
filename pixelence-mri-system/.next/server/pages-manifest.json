@@ -1,9 +1,0 @@
-{
-  "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/dashboard/it-admin": "pages/dashboard/it-admin.js",
-  "/reports": "pages/reports.js",
-  "/settings/system": "pages/settings/system.js",
-  "/settings/license": "pages/settings/license.js"
-}
