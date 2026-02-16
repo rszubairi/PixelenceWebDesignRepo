@@ -1,0 +1,21 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci --prefix pixelence-mri-system
+    build:
+      commands:
+        - npm run build --prefix pixelence-mri-system
+  artifacts:
+    baseDirectory: pixelence-mri-system/.next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - pixelence-mri-system/node_modules/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'max-age=0, no-cache, no-store, must-revalidate'

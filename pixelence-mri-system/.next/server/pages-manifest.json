@@ -3,11 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/dashboard/it-admin": "pages/dashboard/it-admin.js",
-  "/appointments": "pages/appointments.js",
-  "/billing": "pages/billing.js",
-  "/settings/users": "pages/settings/users.js",
   "/reports": "pages/reports.js",
-  "/dashboard": "pages/dashboard.js",
-  "/": "pages/index.js",
+  "/settings/system": "pages/settings/system.js",
   "/settings/license": "pages/settings/license.js"
 }
