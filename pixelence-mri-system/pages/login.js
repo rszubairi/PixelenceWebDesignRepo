@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAction } from 'convex/react';
 import { api } from '../convex/_generated/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const router = useRouter();
@@ -10,7 +11,8 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const login = useAction(api.auth.login);
+  const loginAction = useAction(api.auth.login);
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +20,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const user = await login({ email, password });
+      const user = await loginAction({ email, password });
 
-      // Store user data in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
+      // Update AuthContext state (also persists to localStorage)
+      login(user);
 
       // Redirect based on role
       const dashboardRoutes = {
