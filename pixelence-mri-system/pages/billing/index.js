@@ -3,18 +3,15 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../components/layout/Layout';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Billing = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [invoices, setInvoices] = useState([]);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock invoice data
     const mockInvoices = [
       {

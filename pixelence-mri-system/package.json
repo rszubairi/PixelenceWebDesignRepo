@@ -2,14 +2,19 @@
   "name": "pixelence-mri-system",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@8",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p $PORT",
     "lint": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "bcryptjs": "^2.4.3",
     "convex": "^1.17.4",
     "dicom-parser": "^1.8.21",
     "next": "^14.0.0",

@@ -2,17 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/layout/Layout';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LicenseManagement = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [license, setLicense] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock license data
     const mockLicense = {
       key: 'PXLC-MRI-2023-ENT-001',

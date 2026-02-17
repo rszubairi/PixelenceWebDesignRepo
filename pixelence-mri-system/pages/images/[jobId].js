@@ -4,19 +4,16 @@ import Layout from '../../components/layout/Layout';
 import DicomViewer from '../../components/imaging/DicomViewer';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ImageViewer = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { jobId } = router.query;
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Fetch job data
     if (jobId) {
       fetchJobData(jobId);

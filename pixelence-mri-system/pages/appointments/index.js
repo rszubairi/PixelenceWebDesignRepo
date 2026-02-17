@@ -5,19 +5,16 @@ import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Form from '../../components/ui/Form';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Appointments = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock data for appointments
     const mockAppointments = [
       {

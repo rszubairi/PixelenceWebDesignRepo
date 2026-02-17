@@ -4,9 +4,10 @@ import Layout from '../../components/layout/Layout';
 import StatsCard from '../../components/dashboard/StatsCard';
 import RecentJobs from '../../components/dashboard/RecentJobs';
 import Chart from '../../components/dashboard/Chart';
+import { useAuth } from '../../contexts/AuthContext';
 
 const RadiologistDashboard = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     pendingAnalyses: 7,
     reportsCompleted: 23,
@@ -17,10 +18,6 @@ const RadiologistDashboard = () => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock data for recent jobs
     const mockJobs = [
       { id: 'JOB-2023-001', patient: 'John Smith', status: 'Analysis Complete', date: '2023-11-15' },

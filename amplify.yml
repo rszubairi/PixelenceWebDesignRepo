@@ -7,7 +7,6 @@ frontend:
         - npm ci
     build:
       commands:
-        - cd pixelence-mri-system
         - npm run build
   artifacts:
     baseDirectory: pixelence-mri-system

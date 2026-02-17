@@ -4,19 +4,16 @@ import Layout from '../../components/layout/Layout';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Reports = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock data for reports
     const mockReports = [
       {

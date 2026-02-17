@@ -24,22 +24,18 @@ const Sidebar = ({ userRole }) => {
         { name: 'License Management', href: '/settings/license', icon: 'key' },
       ],
       'it-admin': [
-        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'Billing', href: '/billing', icon: 'credit-card' },
         { name: 'User Management', href: '/settings/users', icon: 'users' },
         { name: 'System Settings', href: '/settings/system', icon: 'cog' },
         { name: 'License Management', href: '/settings/license', icon: 'key' },
       ],
       'radiographer': [
-        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'Image Upload', href: '/images/upload', icon: 'upload' },
       ],
       'radiologist': [
-        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'Review Queue', href: '/reports/review', icon: 'eye' },
       ],
       'doctor': [
-        { name: 'Images', href: '/images', icon: 'photograph' },
         { name: 'My Appointments', href: '/appointments/my', icon: 'calendar' },
       ],
     };
