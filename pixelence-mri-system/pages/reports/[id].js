@@ -223,3 +223,11 @@ const ReportDetails = () => {
 };
 
 export default ReportDetails;
+
+export async function getStaticPaths() {
+  return { paths: [], fallback: false };
+}
+
+export async function getStaticProps() {
+  return { props: {} };
+}

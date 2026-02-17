@@ -8,7 +8,7 @@ frontend:
       commands:
         - npm run build
   artifacts:
-    baseDirectory: pixelence-mri-system/.next
+    baseDirectory: pixelence-mri-system/out
     files:
       - '**/*'
   cache:
