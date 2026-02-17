@@ -15,8 +15,8 @@ const DicomViewer = ({ images }) => {
   console.log('=== DicomViewer component mounted ===');
 
   // Single DICOM file path containing multiple frames
-  const dicomFilePath = '/dicom images/01.dcm';
-  
+  const dicomFilePath = '/dicom-images/01.dcm';
+
   // Target sequence types to extract
   const targetSequences = ['T1', 'T2', 'FLAIR', 'DSW'];
 
@@ -41,10 +41,10 @@ const DicomViewer = ({ images }) => {
     try {
       // Try to load multiple DICOM files (for single-frame files)
       const dicomFilePaths = [
-        '/dicom images/01.dcm',
-        '/dicom images/02.dcm',
-        '/dicom images/03.dcm',
-        '/dicom images/04.dcm'
+        '/dicom-images/01.dcm',
+        '/dicom-images/02.dcm',
+        '/dicom-images/03.dcm',
+        '/dicom-images/04.dcm'
       ];
       
       const extractedFrames = [];
@@ -120,7 +120,7 @@ const DicomViewer = ({ images }) => {
       if (extractedFrames.length === 0) {
         console.log('Trying multi-frame DICOM approach...');
         
-        const response = await fetch('/dicom images/01.dcm');
+        const response = await fetch('/dicom-images/01.dcm');
         if (!response.ok) {
           throw new Error('Failed to fetch DICOM file');
         }
