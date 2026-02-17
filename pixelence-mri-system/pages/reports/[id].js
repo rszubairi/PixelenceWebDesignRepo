@@ -3,19 +3,16 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../components/layout/Layout';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ReportDetails = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Fetch report data
     if (id) {
       fetchReportData(id);

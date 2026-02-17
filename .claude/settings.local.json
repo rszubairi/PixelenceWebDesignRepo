@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/raheelzubairi/Documents/projects/pixelence/**)",
+      "Bash(npm install:*)",
+      "Read(//Users/raheelzubairi/Documents/projects/pixelence/Web Design/**)",
+      "Bash(python3:*)",
+      "Bash(# Verify no pixelence_user references remain anywhere in pages grep -rn \"\"pixelence_user\"\" \"\"/Users/raheelzubairi/Documents/projects/pixelence/Web Design/pixelence-mri-system/pages/\"\")"
+    ]
+  }
+}

@@ -1,10 +1,11 @@
 // pages/settings/system.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/layout/Layout';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 const SystemSettings = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [settings, setSettings] = useState({
     maintenanceMode: false,
     emailNotifications: true,
@@ -14,11 +15,6 @@ const SystemSettings = () => {
     apiRateLimit: 1000,
   });
 
-  useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-  }, []);
 
   const handleSettingChange = (setting, value) => {
     setSettings({

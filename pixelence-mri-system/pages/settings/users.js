@@ -5,9 +5,10 @@ import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Form from '../../components/ui/Form';
+import { useAuth } from '../../contexts/AuthContext';
 
 const UserManagement = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -16,10 +17,6 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Mock data for users
     const mockUsers = [
       {

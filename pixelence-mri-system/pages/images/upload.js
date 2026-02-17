@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/layout/Layout';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ImageUpload = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [jobId, setJobId] = useState('');
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -14,10 +15,6 @@ const ImageUpload = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-
     // Get jobId from query params
     if (router.query.jobId) {
       setJobId(router.query.jobId);

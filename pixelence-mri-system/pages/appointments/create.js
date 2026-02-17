@@ -1,19 +1,15 @@
 // pages/appointments/create.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout/Layout';
 import Form from '../../components/ui/Form';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CreateAppointment = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    // Get user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('pixelence_user'));
-    setUser(userData);
-  }, []);
 
   const handleCreateAppointment = (formData) => {
     // In a real app, this would make an API call
