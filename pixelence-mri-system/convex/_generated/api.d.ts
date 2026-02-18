@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as initializeSampleUsers from "../initializeSampleUsers.js";
 import type * as jobs from "../jobs.js";
 import type * as patients from "../patients.js";
+import type * as reports from "../reports.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   initializeSampleUsers: typeof initializeSampleUsers;
   jobs: typeof jobs;
   patients: typeof patients;
+  reports: typeof reports;
 }>;
 
 /**

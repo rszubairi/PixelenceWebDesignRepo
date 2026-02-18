@@ -1,64 +1,53 @@
 // pages/appointments/[id].js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Layout from '../../components/layout/Layout';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 const AppointmentDetails = () => {
   const { user } = useAuth();
-  const [appointment, setAppointment] = useState(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { id } = router.query;
 
-  useEffect(() => {
-    // Fetch appointment data
-    if (id) {
-      fetchAppointmentData(id);
-    }
-  }, [id]);
-
-  const fetchAppointmentData = async (appointmentId) => {
-    // Mock API call to get appointment data
-    const mockAppointment = {
-      id: appointmentId,
-      patientName: 'John Smith',
-      age: 45,
-      gender: 'Male',
-      complaint: 'Persistent headaches',
-      referringPhysician: 'Dr. Johnson',
-      institution: 'General Hospital',
-      scheduledDateTime: '2023-11-20T09:00:00',
-      status: 'Scheduled',
-      priority: 'Normal',
-      notes: 'Patient reports headaches for the past 2 weeks. Previous CT scan showed no abnormalities.',
-      contactInfo: {
-        phone: '+1 (555) 123-4567',
-        email: 'john.smith@email.com',
-        emergencyContact: 'Jane Smith - Sister - +1 (555) 987-6543'
-      },
-      medicalHistory: [
-        'Hypertension (controlled)',
-        'Previous migraine episodes',
-        'Allergic to penicillin'
-      ]
-    };
-    setAppointment(mockAppointment);
-    setLoading(false);
-  };
+  const appointment = useQuery(
+    api.appointments.getAppointmentById,
+    id ? { appointmentId: id } : "skip"
+  );
 
   if (!user) {
     return <div>Loading...</div>;
   }
 
-  if (loading) {
+  if (appointment === undefined) {
     return (
       <Layout user={user}>
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (appointment === null) {
+    return (
+      <Layout user={user}>
+        <div className="py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center py-12">
+              <h2 className="text-lg font-medium text-gray-900">Appointment not found</h2>
+              <p className="mt-2 text-sm text-gray-600">The appointment with ID &quot;{id}&quot; could not be found.</p>
+              <div className="mt-4">
+                <Button onClick={() => router.push('/appointments')}>
+                  Back to Appointments
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -74,14 +63,14 @@ const AppointmentDetails = () => {
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">Appointment Details</h1>
               <p className="mt-1 text-sm text-gray-600">
-                Appointment ID: {appointment.id}
+                Appointment ID: {appointment.appointmentId}
               </p>
             </div>
             <div className="flex space-x-3">
               <Button variant="secondary" onClick={() => router.back()}>
                 Back to Appointments
               </Button>
-              <Button onClick={() => router.push(`/images/${appointment.id}`)}>
+              <Button onClick={() => router.push(`/images/${appointment.appointmentId}`)}>
                 View Images
               </Button>
             </div>
@@ -122,6 +111,10 @@ const AppointmentDetails = () => {
                     <dt className="text-sm font-medium text-gray-500">Complaint</dt>
                     <dd className="text-sm text-gray-900">{appointment.complaint}</dd>
                   </div>
+                  <div className="sm:col-span-2">
+                    <dt className="text-sm font-medium text-gray-500">Cause of Referral</dt>
+                    <dd className="text-sm text-gray-900">{appointment.causeOfReferral}</dd>
+                  </div>
                 </dl>
               </div>
 
@@ -146,7 +139,8 @@ const AppointmentDetails = () => {
                     <dd className="text-sm text-gray-900">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                         appointment.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
-                        appointment.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
+                        appointment.status === 'DICOM Uploaded' ? 'bg-indigo-100 text-indigo-800' :
+                        appointment.status === 'Under Review' ? 'bg-yellow-100 text-yellow-800' :
                         appointment.status === 'Completed' ? 'bg-green-100 text-green-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
@@ -155,10 +149,14 @@ const AppointmentDetails = () => {
                     </dd>
                   </div>
                   <div>
+                    <dt className="text-sm font-medium text-gray-500">Type</dt>
+                    <dd className="text-sm text-gray-900">{appointment.type}</dd>
+                  </div>
+                  <div>
                     <dt className="text-sm font-medium text-gray-500">Referring Physician</dt>
                     <dd className="text-sm text-gray-900">{appointment.referringPhysician}</dd>
                   </div>
-                  <div className="sm:col-span-2">
+                  <div>
                     <dt className="text-sm font-medium text-gray-500">Institution</dt>
                     <dd className="text-sm text-gray-900">{appointment.institution}</dd>
                   </div>
@@ -166,10 +164,12 @@ const AppointmentDetails = () => {
               </div>
 
               {/* Clinical Notes */}
-              <div className="bg-white shadow rounded-lg p-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Clinical Notes</h2>
-                <p className="text-sm text-gray-700">{appointment.notes}</p>
-              </div>
+              {appointment.notes && (
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">Clinical Notes</h2>
+                  <p className="text-sm text-gray-700">{appointment.notes}</p>
+                </div>
+              )}
             </div>
 
             {/* Sidebar */}
@@ -180,31 +180,33 @@ const AppointmentDetails = () => {
                 <dl className="space-y-2">
                   <div>
                     <dt className="text-xs text-gray-500">Phone</dt>
-                    <dd className="text-sm text-gray-900">{appointment.contactInfo.phone}</dd>
+                    <dd className="text-sm text-gray-900">{appointment.contactInfo.phone || 'N/A'}</dd>
                   </div>
                   <div>
                     <dt className="text-xs text-gray-500">Email</dt>
-                    <dd className="text-sm text-gray-900">{appointment.contactInfo.email}</dd>
+                    <dd className="text-sm text-gray-900">{appointment.contactInfo.email || 'N/A'}</dd>
                   </div>
                   <div>
                     <dt className="text-xs text-gray-500">Emergency Contact</dt>
-                    <dd className="text-sm text-gray-900">{appointment.contactInfo.emergencyContact}</dd>
+                    <dd className="text-sm text-gray-900">{appointment.contactInfo.emergencyContact || 'N/A'}</dd>
                   </div>
                 </dl>
               </div>
 
               {/* Medical History */}
-              <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Medical History</h3>
-                <ul className="space-y-1">
-                  {appointment.medicalHistory.map((item, index) => (
-                    <li key={index} className="text-sm text-gray-700 flex items-start">
-                      <span className="text-purple-500 mr-2">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {appointment.medicalHistory.length > 0 && (
+                <div className="bg-white shadow rounded-lg p-6">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Medical History</h3>
+                  <ul className="space-y-1">
+                    {appointment.medicalHistory.map((item, index) => (
+                      <li key={index} className="text-sm text-gray-700 flex items-start">
+                        <span className="text-purple-500 mr-2">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="bg-white shadow rounded-lg p-6">

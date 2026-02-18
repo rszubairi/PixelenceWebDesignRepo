@@ -1,81 +1,35 @@
 // pages/reports/index.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/layout/Layout';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 const Reports = () => {
   const { user } = useAuth();
-  const [reports, setReports] = useState([]);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    // Mock data for reports
-    const mockReports = [
-      {
-        id: 'RPT-2023-001',
-        jobId: 'JOB-2023-001',
-        patientName: 'John Smith',
-        age: 45,
-        gender: 'Male',
-        status: 'Analysis Complete',
-        generatedDate: '2023-11-20T10:30:00',
-        approved: false,
-        priority: 'Normal',
-      },
-      {
-        id: 'RPT-2023-002',
-        jobId: 'JOB-2023-002',
-        patientName: 'Emily Johnson',
-        age: 32,
-        gender: 'Female',
-        status: 'Under Review',
-        generatedDate: '2023-11-21T14:45:00',
-        approved: false,
-        priority: 'High',
-      },
-      {
-        id: 'RPT-2023-003',
-        jobId: 'JOB-2023-003',
-        patientName: 'Michael Brown',
-        age: 58,
-        gender: 'Male',
-        status: 'Approved',
-        generatedDate: '2023-11-19T16:20:00',
-        approved: true,
-        priority: 'Normal',
-      },
-      {
-        id: 'RPT-2023-004',
-        jobId: 'JOB-2023-004',
-        patientName: 'Sarah Davis',
-        age: 27,
-        gender: 'Female',
-        status: 'Analysis Complete',
-        generatedDate: '2023-11-22T11:15:00',
-        approved: false,
-        priority: 'Low',
-      },
-      {
-        id: 'RPT-2023-005',
-        jobId: 'JOB-2023-005',
-        patientName: 'Robert Wilson',
-        age: 63,
-        gender: 'Male',
-        status: 'Approved',
-        generatedDate: '2023-11-18T13:40:00',
-        approved: true,
-        priority: 'High',
-      },
-    ];
-    setReports(mockReports);
-  }, []);
+  const reports = useQuery(api.reports.getAllReports) || [];
 
-  const filteredReports = reports.filter(report => {
+  // Map Convex data to table-friendly format
+  const mappedReports = reports.map((report) => ({
+    id: report.reportId,
+    jobId: report.jobId,
+    patientName: report.patientName,
+    age: report.age,
+    gender: report.gender,
+    status: report.status,
+    generatedDate: new Date(report.createdAt).toISOString(),
+    approved: report.approved,
+    priority: report.priority,
+  }));
+
+  const filteredReports = mappedReports.filter(report => {
     const matchesFilter = filter === 'all' || report.status === filter;
     const matchesSearch = report.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          report.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -111,11 +65,9 @@ const Reports = () => {
         <Button size="sm" onClick={() => router.push(`/reports/${row.id}`)}>
           View
         </Button>
-        {row.status === 'Analysis Complete' && (
-          <Button size="sm" variant="secondary" onClick={() => router.push(`/images/${row.jobId}`)}>
-            View Images
-          </Button>
-        )}
+        <Button size="sm" variant="secondary" onClick={() => router.push(`/images/${row.jobId}`)}>
+          View Images
+        </Button>
       </div>
     )},
   ];

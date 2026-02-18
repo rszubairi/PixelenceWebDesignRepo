@@ -6,6 +6,7 @@ import RecentJobs from '../../components/dashboard/RecentJobs';
 import Chart from '../../components/dashboard/Chart';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../contexts/AuthContext';
+import { useWeeklyJobVolume } from '../../hooks/useWeeklyJobVolume';
 
 const DoctorDashboard = () => {
   const { user } = useAuth();
@@ -16,7 +17,7 @@ const DoctorDashboard = () => {
     urgentCases: 1
   });
   const [recentJobs, setRecentJobs] = useState([]);
-  const [chartData, setChartData] = useState([]);
+  const chartData = useWeeklyJobVolume();
 
   useEffect(() => {
     // Mock data for recent jobs
@@ -29,17 +30,6 @@ const DoctorDashboard = () => {
     ];
     setRecentJobs(mockJobs);
 
-    // Mock data for chart
-    const mockChartData = [
-      { name: 'Mon', jobs: 2 },
-      { name: 'Tue', jobs: 3 },
-      { name: 'Wed', jobs: 4 },
-      { name: 'Thu', jobs: 1 },
-      { name: 'Fri', jobs: 5 },
-      { name: 'Sat', jobs: 1 },
-      { name: 'Sun', jobs: 0 },
-    ];
-    setChartData(mockChartData);
   }, []);
 
   return (

@@ -6,6 +6,7 @@ import RecentJobs from '../../components/dashboard/RecentJobs';
 import Chart from '../../components/dashboard/Chart';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../contexts/AuthContext';
+import { useWeeklyJobVolume } from '../../hooks/useWeeklyJobVolume';
 
 const ITAdminDashboard = () => {
   const { user } = useAuth();
@@ -16,7 +17,7 @@ const ITAdminDashboard = () => {
     systemHealth: 'Good'
   });
   const [recentJobs, setRecentJobs] = useState([]);
-  const [chartData, setChartData] = useState([]);
+  const chartData = useWeeklyJobVolume();
 
   useEffect(() => {
     // Mock data for recent jobs
@@ -29,17 +30,6 @@ const ITAdminDashboard = () => {
     ];
     setRecentJobs(mockJobs);
 
-    // Mock data for chart
-    const mockChartData = [
-      { name: 'Mon', jobs: 4 },
-      { name: 'Tue', jobs: 6 },
-      { name: 'Wed', jobs: 8 },
-      { name: 'Thu', jobs: 5 },
-      { name: 'Fri', jobs: 9 },
-      { name: 'Sat', jobs: 3 },
-      { name: 'Sun', jobs: 2 },
-    ];
-    setChartData(mockChartData);
   }, []);
 
   return (

@@ -5,6 +5,7 @@ import StatsCard from '../../components/dashboard/StatsCard';
 import RecentJobs from '../../components/dashboard/RecentJobs';
 import Chart from '../../components/dashboard/Chart';
 import { useAuth } from '../../contexts/AuthContext';
+import { useWeeklyJobVolume } from '../../hooks/useWeeklyJobVolume';
 
 const FinanceUserDashboard = () => {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ const FinanceUserDashboard = () => {
     monthlyGrowth: 8.5
   });
   const [recentJobs, setRecentJobs] = useState([]);
-  const [chartData, setChartData] = useState([]);
+  const chartData = useWeeklyJobVolume();
 
   useEffect(() => {
     // Mock data for recent jobs
@@ -27,18 +28,6 @@ const FinanceUserDashboard = () => {
       { id: 'JOB-2023-005', patient: 'Robert Wilson', status: 'Completed', date: '2023-11-13' },
     ];
     setRecentJobs(mockJobs);
-
-    // Mock data for chart
-    const mockChartData = [
-      { name: 'Jan', jobs: 12000 },
-      { name: 'Feb', jobs: 15000 },
-      { name: 'Mar', jobs: 18000 },
-      { name: 'Apr', jobs: 22000 },
-      { name: 'May', jobs: 25000 },
-      { name: 'Jun', jobs: 28000 },
-      { name: 'Jul', jobs: 32000 },
-    ];
-    setChartData(mockChartData);
   }, []);
 
   if (!user) {
@@ -85,7 +74,7 @@ const FinanceUserDashboard = () => {
 
             <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
               <RecentJobs jobs={recentJobs} />
-              <Chart title="Monthly Revenue" data={chartData} />
+              <Chart title="Weekly Job Volume" data={chartData} />
             </div>
 
             <div className="mt-8">

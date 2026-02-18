@@ -1,102 +1,73 @@
 // pages/appointments/index.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/layout/Layout';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Form from '../../components/ui/Form';
+import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 const Appointments = () => {
   const { user } = useAuth();
-  const [appointments, setAppointments] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
-  useEffect(() => {
-    // Mock data for appointments
-    const mockAppointments = [
-      {
-        id: 'JOB-2023-001',
-        patientName: 'John Smith',
-        age: 45,
-        gender: 'Male',
-        complaint: 'Persistent headaches',
-        causeOfReferral: 'Neurological symptoms',
-        referringPhysician: 'Dr. Johnson',
-        institution: 'General Hospital',
-        scheduledDateTime: '2023-11-20T09:00:00',
-        status: 'Scheduled',
-      },
-      {
-        id: 'JOB-2023-002',
-        patientName: 'Emily Johnson',
-        age: 32,
-        gender: 'Female',
-        complaint: 'Memory loss',
-        causeOfReferral: 'Cognitive assessment',
-        referringPhysician: 'Dr. Williams',
-        institution: 'General Hospital',
-        scheduledDateTime: '2023-11-21T14:30:00',
-        status: 'DICOM Uploaded',
-      },
-      {
-        id: 'JOB-2023-003',
-        patientName: 'Michael Brown',
-        age: 58,
-        gender: 'Male',
-        complaint: 'Seizures',
-        causeOfReferral: 'Epilepsy evaluation',
-        referringPhysician: 'Dr. Davis',
-        institution: 'General Hospital',
-        scheduledDateTime: '2023-11-19T11:15:00',
-        status: 'Under Review',
-      },
-      {
-        id: 'JOB-2023-004',
-        patientName: 'Sarah Davis',
-        age: 27,
-        gender: 'Female',
-        complaint: 'Dizziness',
-        causeOfReferral: 'Balance issues',
-        referringPhysician: 'Dr. Miller',
-        institution: 'General Hospital',
-        scheduledDateTime: '2023-11-22T10:00:00',
-        status: 'Scheduled',
-      },
-      {
-        id: 'JOB-2023-005',
-        patientName: 'Robert Wilson',
-        age: 63,
-        gender: 'Male',
-        complaint: 'Vision changes',
-        causeOfReferral: 'Optic nerve assessment',
-        referringPhysician: 'Dr. Taylor',
-        institution: 'General Hospital',
-        scheduledDateTime: '2023-11-18T15:45:00',
-        status: 'Completed',
-      },
-    ];
-    setAppointments(mockAppointments);
-  }, []);
+  const appointments = useQuery(api.appointments.getAllAppointments) || [];
+  const createAppointment = useMutation(api.appointments.createAppointment);
 
-  const filteredAppointments = appointments.filter(appointment => {
+  // Map Convex data to table-friendly format
+  const mappedAppointments = appointments.map((appt) => ({
+    id: appt.appointmentId,
+    patientName: appt.patientName,
+    age: appt.age,
+    gender: appt.gender,
+    complaint: appt.complaint,
+    referringPhysician: appt.referringPhysician,
+    scheduledDateTime: appt.scheduledDateTime,
+    status: appt.status,
+  }));
+
+  const filteredAppointments = mappedAppointments.filter(appointment => {
     const matchesFilter = filter === 'all' || appointment.status === filter;
     const matchesSearch = appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          appointment.id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
-  const handleCreateAppointment = (formData) => {
-    // In a real app, this would make an API call
-    const newAppointment = {
-      id: `JOB-2023-${String(appointments.length + 1).padStart(3, '0')}`,
-      ...formData,
-      status: 'Scheduled',
-    };
-    setAppointments([...appointments, newAppointment]);
-    setShowCreateModal(false);
+  const handleCreateAppointment = async (formData) => {
+    try {
+      const appointmentId = `JOB-2023-${String(appointments.length + 1).padStart(3, '0')}`;
+      await createAppointment({
+        appointmentId,
+        patientId: `PAT-${String(appointments.length + 1).padStart(3, '0')}`,
+        patientName: formData.patientName,
+        age: parseInt(formData.age, 10),
+        gender: formData.gender,
+        complaint: formData.complaint,
+        causeOfReferral: formData.causeOfReferral,
+        referringPhysician: formData.referringPhysician,
+        institution: formData.institution,
+        doctorId: user?.userId || "U000002",
+        scheduledDateTime: formData.scheduledDateTime,
+        status: "Scheduled",
+        type: "MRI",
+        priority: "Normal",
+        contactInfo: {
+          phone: "",
+          email: "",
+          emergencyContact: "",
+        },
+        medicalHistory: [],
+      });
+      setShowCreateModal(false);
+    } catch (err) {
+      console.error('Failed to create appointment:', err);
+    }
   };
 
   if (!user) {
@@ -118,11 +89,11 @@ const Appointments = () => {
     )},
     { key: 'actions', label: 'Actions', format: (_, row) => (
       <div className="flex space-x-2">
-        <Button size="sm" variant="secondary" onClick={() => window.location.href = `/appointments/${row.id}`}>
+        <Button size="sm" variant="secondary" onClick={() => router.push(`/appointments/${row.id}`)}>
           View
         </Button>
         {row.status === 'Scheduled' && (
-          <Button size="sm" variant="secondary" onClick={() => window.location.href = `/images/upload?jobId=${row.id}`}>
+          <Button size="sm" variant="secondary" onClick={() => router.push(`/images/upload?jobId=${row.id}`)}>
             Upload DICOM
           </Button>
         )}

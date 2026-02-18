@@ -5,6 +5,7 @@ import StatsCard from '../../components/dashboard/StatsCard';
 import RecentJobs from '../../components/dashboard/RecentJobs';
 import Chart from '../../components/dashboard/Chart';
 import { useAuth } from '../../contexts/AuthContext';
+import { useWeeklyJobVolume } from '../../hooks/useWeeklyJobVolume';
 
 const RadiographerDashboard = () => {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ const RadiographerDashboard = () => {
     equipmentStatus: 'All Operational'
   });
   const [recentJobs, setRecentJobs] = useState([]);
-  const [chartData, setChartData] = useState([]);
+  const chartData = useWeeklyJobVolume();
 
   useEffect(() => {
     // Mock data for recent jobs
@@ -28,17 +29,6 @@ const RadiographerDashboard = () => {
     ];
     setRecentJobs(mockJobs);
 
-    // Mock data for chart
-    const mockChartData = [
-      { name: 'Mon', jobs: 12 },
-      { name: 'Tue', jobs: 15 },
-      { name: 'Wed', jobs: 18 },
-      { name: 'Thu', jobs: 14 },
-      { name: 'Fri', jobs: 20 },
-      { name: 'Sat', jobs: 8 },
-      { name: 'Sun', jobs: 5 },
-    ];
-    setChartData(mockChartData);
   }, []);
 
   if (!user) {

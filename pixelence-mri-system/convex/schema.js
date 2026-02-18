@@ -26,16 +26,31 @@ export default defineSchema({
 
   // Appointments table
   appointments: defineTable({
+    appointmentId: v.string(), // e.g. "JOB-2023-001"
     patientId: v.string(),
+    patientName: v.string(),
+    age: v.number(),
+    gender: v.string(),
+    complaint: v.string(),
+    causeOfReferral: v.string(),
+    referringPhysician: v.string(),
+    institution: v.string(),
     doctorId: v.string(),
-    appointmentDate: v.string(),
-    appointmentTime: v.string(),
-    status: v.string(), // scheduled, completed, cancelled
+    scheduledDateTime: v.string(),
+    status: v.string(), // Scheduled, DICOM Uploaded, Processing, Under Review, Completed, etc.
     type: v.string(), // MRI, consultation, follow-up
+    priority: v.string(), // Low, Normal, High
     notes: v.optional(v.string()),
+    contactInfo: v.object({
+      phone: v.string(),
+      email: v.string(),
+      emergencyContact: v.string(),
+    }),
+    medicalHistory: v.array(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index("by_appointmentId", ["appointmentId"])
     .index("by_patient", ["patientId"])
     .index("by_doctor", ["doctorId"])
     .index("by_status", ["status"]),
@@ -65,11 +80,32 @@ export default defineSchema({
     reportId: v.string(),
     jobId: v.string(),
     patientId: v.string(),
+    patientName: v.string(),
+    age: v.number(),
+    gender: v.string(),
+    complaint: v.string(),
+    referringPhysician: v.string(),
+    institution: v.string(),
+    scheduledDateTime: v.string(),
     radiologistId: v.string(),
     findings: v.string(),
     impression: v.string(),
     recommendations: v.optional(v.string()),
-    status: v.string(), // draft, submitted, approved
+    status: v.string(), // Analysis Complete, Under Review, Approved
+    priority: v.string(), // Low, Normal, High
+    approved: v.boolean(),
+    dicomFile: v.string(), // e.g. "01.dcm"
+    images: v.array(v.object({
+      id: v.string(),
+      type: v.string(), // T1, T2, FLAIR, etc.
+    })),
+    aiAnalysis: v.object({
+      sitesOfUptake: v.string(),
+      natureOfUptake: v.string(),
+      conclusion: v.string(),
+      diagnosisRecommendations: v.string(),
+    }),
+    radiologistComments: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
     approvedAt: v.optional(v.number()),

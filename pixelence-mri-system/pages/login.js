@@ -37,7 +37,16 @@ export default function Login() {
       const redirectPath = dashboardRoutes[user.role] || '/dashboard';
       router.push(redirectPath);
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      const message = err.message || '';
+      if (message.includes('Invalid email or password')) {
+        setError('Incorrect email or password. Please try again.');
+      } else if (message.includes('Account is inactive')) {
+        setError('Your account has been deactivated. Please contact your administrator.');
+      } else if (message.includes('not properly configured')) {
+        setError('There is a problem with your account. Please contact your administrator.');
+      } else {
+        setError('Something went wrong. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }

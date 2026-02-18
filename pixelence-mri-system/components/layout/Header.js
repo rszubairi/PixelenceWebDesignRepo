@@ -1,16 +1,15 @@
 // components/layout/Header.js
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Notification from '../ui/Notification';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Header = ({ user }) => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const router = useRouter();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // Implement logout logic
-    router.push('/');
+    logout();
   };
 
   return (
