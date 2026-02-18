@@ -1,3 +1,4 @@
+node_modules/
 /pixelence-mri-system/node_modules
 
 .env.local
