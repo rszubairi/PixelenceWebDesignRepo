@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && router.pathname === '/') {
       if (isAuthenticated && user) {
         // Redirect to role-specific dashboard
         const dashboardRoutes = {
