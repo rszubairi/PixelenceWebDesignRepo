@@ -3,12 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - cd pixelence-mri-system && npm ci
+        - npm ci --prefix pixelence-mri-system
     build:
       commands:
-        - cd pixelence-mri-system && npm run build
+        - npm run build --prefix pixelence-mri-system
   artifacts:
-    baseDirectory: pixelence-mri-system
+    baseDirectory: pixelence-mri-system/.next
     files:
       - '**/*'
   cache:
