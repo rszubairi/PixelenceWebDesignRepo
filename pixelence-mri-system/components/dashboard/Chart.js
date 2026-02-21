@@ -2,7 +2,20 @@
 import React from 'react';
 
 const Chart = ({ title, data }) => {
-  const maxValue = Math.max(...data.map(item => item.jobs));
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
+          <div className="mt-5 flex items-center justify-center h-64 text-gray-400">
+            Loading chart data...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const maxValue = Math.max(...data.map(item => item.jobs)) || 1;
 
   return (
     <div className="bg-white shadow rounded-lg">

@@ -10,6 +10,10 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     // Check if user is logged in on mount
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
