@@ -1,17 +1,21 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - npm ci --prefix pixelence-mri-system
-    build:
-      commands:
-        - npm run build --prefix pixelence-mri-system
-  artifacts:
-    baseDirectory: pixelence-mri-system/.next
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - pixelence-mri-system/node_modules/**/*
-      - pixelence-mri-system/.next/cache/**/*
+applications:
+  - appRoot: pixelence-mri-system
+    framework: Next.js - SSR
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - env | grep -e _BUILD_ -e _BRANCH
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - .next/cache/**/*
