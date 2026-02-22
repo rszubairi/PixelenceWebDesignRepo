@@ -1,9 +1,6 @@
 version: 1
 applications:
   - appRoot: pixelence-mri-system
-    framework:
-      name: Next.js - SSR
-      version: '14'
     frontend:
       phases:
         preBuild:
