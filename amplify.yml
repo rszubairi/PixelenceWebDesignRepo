@@ -1,10 +1,14 @@
 version: 1
 applications:
   - appRoot: pixelence-mri-system
+    framework:
+      name: Next.js - SSR
+      version: '14'
     frontend:
       phases:
         preBuild:
           commands:
+            - nvm use 18
             - npm ci
         build:
           commands:
@@ -15,9 +19,5 @@ applications:
           - '**/*'
       cache:
         paths:
+          - .next/cache/**/*
           - node_modules/**/*
-    env:
-      variables:
-        # Set your actual Convex URL in Amplify Console environment variables
-        # The build will fail without a valid NEXT_PUBLIC_CONVEX_URL
-        NEXT_PUBLIC_CONVEX_URL: $NEXT_PUBLIC_CONVEX_URL
