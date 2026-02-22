@@ -16,3 +16,8 @@ applications:
       cache:
         paths:
           - node_modules/**/*
+    env:
+      variables:
+        # Set your actual Convex URL in Amplify Console environment variables
+        # The build will fail without a valid NEXT_PUBLIC_CONVEX_URL
+        NEXT_PUBLIC_CONVEX_URL: $NEXT_PUBLIC_CONVEX_URL
