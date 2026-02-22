@@ -6,16 +6,17 @@ applications:
       phases:
         preBuild:
           commands:
+            - cd pixelence-mri-system
             - npm ci
         build:
           commands:
             - env | grep -e _BUILD_ -e _BRANCH
-            - npm run build
+            - npm run build --prefix pixelence-mri-system
       artifacts:
-        baseDirectory: .next
+        baseDirectory: pixelence-mri-system/.next
         files:
           - '**/*'
       cache:
         paths:
-          - node_modules/**/*
-          - .next/cache/**/*
+          - pixelence-mri-system/node_modules/**/*
+          - pixelence-mri-system/.next/cache/**/*
