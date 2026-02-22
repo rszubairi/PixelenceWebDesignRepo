@@ -1,7 +1,6 @@
 version: 1
 applications:
   - appRoot: pixelence-mri-system
-    framework: Next.js - SSR
     frontend:
       phases:
         preBuild:
@@ -9,7 +8,6 @@ applications:
             - npm ci
         build:
           commands:
-            - env | grep -e _BUILD_ -e _BRANCH
             - npm run build
       artifacts:
         baseDirectory: .next
@@ -18,4 +16,3 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-          - .next/cache/**/*
