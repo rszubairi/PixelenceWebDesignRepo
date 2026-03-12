@@ -3,10 +3,13 @@ import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { AuthProvider } from '../contexts/AuthContext';
 
 // Provide a fallback URL during build time to allow builds to complete
-// In production, the actual URL will be provided via environment variables
-const convex = new ConvexReactClient(
-  process.env.NEXT_PUBLIC_CONVEX_URL || 'https://placeholder.convex.cloud'
-);
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+if (!convexUrl && typeof window !== 'undefined') {
+  console.warn("⚠️ NEXT_PUBLIC_CONVEX_URL is missing. Please check your Amplify environment variables.");
+}
+
+const convex = new ConvexReactClient(convexUrl || 'https://placeholder.convex.cloud');
 
 export default function App({ Component, pageProps }) {
   return (
