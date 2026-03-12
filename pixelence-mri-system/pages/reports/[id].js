@@ -224,3 +224,7 @@ const ReportDetails = () => {
 
 
 export default ReportDetails;
+
+export async function getServerSideProps() {
+  return { props: {} };
+}

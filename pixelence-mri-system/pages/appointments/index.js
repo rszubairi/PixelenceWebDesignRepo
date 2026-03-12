@@ -5,6 +5,7 @@ import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Form from '../../components/ui/Form';
+import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Appointments = () => {
@@ -13,6 +14,7 @@ const Appointments = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     // Mock data for appointments
@@ -118,11 +120,11 @@ const Appointments = () => {
     )},
     { key: 'actions', label: 'Actions', format: (_, row) => (
       <div className="flex space-x-2">
-        <Button size="sm" variant="secondary" onClick={() => window.location.href = `/appointments/${row.id}`}>
+        <Button size="sm" variant="secondary" onClick={() => router.push(`/appointments/${row.id}`)}>
           View
         </Button>
         {row.status === 'Scheduled' && (
-          <Button size="sm" variant="secondary" onClick={() => window.location.href = `/images/upload?jobId=${row.id}`}>
+          <Button size="sm" variant="secondary" onClick={() => router.push(`/images/upload?jobId=${row.id}`)}>
             Upload DICOM
           </Button>
         )}

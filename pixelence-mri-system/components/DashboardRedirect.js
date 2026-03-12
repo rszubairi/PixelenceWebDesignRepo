@@ -7,7 +7,7 @@ const DashboardRedirect = () => {
 
   useEffect(() => {
     // Get user data from localStorage
-    const userData = localStorage.getItem('pixelence_user');
+    const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
       // Redirect to role-specific dashboard
