@@ -10,7 +10,6 @@ import {
   Platform,
   ActivityIndicator
 } from 'react-native';
-import { useAction } from 'convex/react';
 import { api } from '@pixelence/convex';
 
 export default function LoginScreen({ onLogin }) {
@@ -19,8 +18,6 @@ export default function LoginScreen({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const loginAction = useAction(api.auth.login);
-
   const handleLogin = async () => {
     if (!email || !password) {
       setError('Please fill in all fields');
@@ -28,9 +25,9 @@ export default function LoginScreen({ onLogin }) {
     }
     setLoading(true);
     setError('');
-    
+
     try {
-      const user = await loginAction({ email, password });
+      const user = await api.auth.login(email, password);
       setLoading(false);
       onLogin(user);
     } catch (err) {
@@ -46,13 +43,11 @@ export default function LoginScreen({ onLogin }) {
     >
       <View style={styles.innerContainer}>
         <View style={styles.logoContainer}>
-          <Image 
-            source={require('../assets/icon.png')} 
+          <Image
+            source={require('../assets/Logo-Black.png')}
             style={styles.logoImage}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Pixelence MRI</Text>
-          <Text style={styles.subtitle}>Patient & Doctor Portal</Text>
         </View>
 
         <View style={styles.formContainer}>
@@ -121,8 +116,8 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   logoImage: {
-    width: 120,
-    height: 120,
+    width: 300,
+    height: 58,
     marginBottom: 0,
   },
   title: {

@@ -8,11 +8,17 @@ import {
   SafeAreaView,
   ActivityIndicator
 } from 'react-native';
-import { useQuery } from 'convex/react';
+import { useState, useEffect } from 'react';
 import { api } from '@pixelence/convex';
 
 export default function AppointmentsScreen({ navigation }) {
-  const appointments = useQuery(api.appointments.getAllAppointments);
+  const [appointments, setAppointments] = useState(undefined);
+
+  useEffect(() => {
+    api.appointments.getAllAppointments()
+      .then(data => setAppointments(Array.isArray(data) ? data : []))
+      .catch(() => setAppointments([]));
+  }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 

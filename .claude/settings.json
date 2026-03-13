@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(node -e:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(# Check Convex global config / auth files find \"\"$USERPROFILE/.convex\"\" -type f)",
+      "Read(//c/Users/rszub/.convex/**)",
+      "Bash(npx expo install:*)"
+    ]
+  }
+}

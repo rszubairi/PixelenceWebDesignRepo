@@ -1,27 +1,39 @@
-import React from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  ScrollView, 
-  TouchableOpacity, 
-  SafeAreaView 
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 
-import { useQuery, useAction } from 'convex/react';
 import { api } from '@pixelence/convex';
 
 export default function DashboardScreen({ user, onLogout, navigation }) {
-  const appointments = useQuery(api.appointments.getAllAppointments) || [];
-  const recentJobs = useQuery(api.jobs.getRecentJobs, { limit: 5 }) || [];
+  const [appointments, setAppointments] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [recentJobs, setRecentJobs] = useState([]);
 
-  const upcomingCount = appointments.filter(a => a.status === 'scheduled').length;
-  const reportCount = recentJobs.filter(j => j.status === 'completed').length;
-  
+  useEffect(() => {
+    api.appointments.getAllAppointments()
+      .then(data => setAppointments(Array.isArray(data) ? data : []))
+      .catch(() => setAppointments([]));
+    api.reports.getAllReports()
+      .then(data => setReports(Array.isArray(data) ? data : []))
+      .catch(() => setReports([]));
+    api.jobs.getRecentJobs({ limit: 5 })
+      .then(data => setRecentJobs(Array.isArray(data) ? data : []))
+      .catch(() => setRecentJobs([]));
+  }, []);
+
+  const upcomingCount = appointments.filter(a => a.status?.toLowerCase() === 'scheduled').length;
+  const completedCount = reports.filter(r => ['completed', 'approved'].includes(r.status?.toLowerCase())).length;
+
   const stats = [
     { label: 'Upcoming', value: upcomingCount.toString(), color: '#8B5CF6', screen: 'Appointments' },
-    { label: 'Completed', value: reportCount.toString(), color: '#10B981', screen: 'Reports' },
-    { label: 'Active', value: recentJobs.length.toString(), color: '#3182CE', screen: 'Reports' },
+    { label: 'Completed', value: completedCount.toString(), color: '#10B981', screen: 'Reports' },
+    { label: 'Reports', value: reports.length.toString(), color: '#3182CE', screen: 'Reports' },
   ];
 
   const recentActivities = recentJobs.map(job => ({

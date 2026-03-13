@@ -8,12 +8,18 @@ import {
   SafeAreaView 
 } from 'react-native';
 
-import { useQuery } from 'convex/react';
+import { useState, useEffect } from 'react';
 import { api } from '@pixelence/convex';
 import { ActivityIndicator } from 'react-native';
 
 export default function ReportsScreen({ navigation }) {
-  const reports = useQuery(api.reports.getAllReports);
+  const [reports, setReports] = useState(undefined);
+
+  useEffect(() => {
+    api.reports.getAllReports()
+      .then(data => setReports(Array.isArray(data) ? data : []))
+      .catch(() => setReports([]));
+  }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 

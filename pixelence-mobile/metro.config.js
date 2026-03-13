@@ -16,12 +16,9 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// Add extra resolution for @pixelence/convex to be safe
+// Point @pixelence/convex to the client package
 config.resolver.extraNodeModules = {
-  '@pixelence/convex': path.resolve(workspaceRoot, 'convex'),
+  '@pixelence/convex': path.resolve(workspaceRoot, 'convex-client'),
 };
-
-// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;

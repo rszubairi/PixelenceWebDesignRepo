@@ -8,13 +8,19 @@ import {
   SafeAreaView 
 } from 'react-native';
 
-import { useQuery } from 'convex/react';
+import { useState, useEffect } from 'react';
 import { api } from '@pixelence/convex';
 import { ActivityIndicator } from 'react-native';
 
 export default function AppointmentDetailScreen({ route, navigation }) {
   const { id } = route.params;
-  const appointment = useQuery(api.appointments.getAppointmentById, { id });
+  const [appointment, setAppointment] = useState(undefined);
+
+  useEffect(() => {
+    api.appointments.getAppointmentById({ id })
+      .then(data => setAppointment(data || null))
+      .catch(() => setAppointment(null));
+  }, [id]);
 
   if (appointment === undefined) {
     return (
