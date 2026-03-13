@@ -1,4 +1,6 @@
 /pixelence-mri-system/node_modules
+/pixelence-mobile/node_modules
+/node_modules
 
 .env.local
 
@@ -32,3 +34,4 @@ weights/
 *.h5
 *.pt
 *.pth
+node_modules

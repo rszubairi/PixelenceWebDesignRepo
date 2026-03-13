@@ -1,12 +1,18 @@
 {
   "name": "pixelence-repo-root",
   "private": true,
-  "packageManager": "npm@8",
+  "packageManager": "npm@8.19.4",
   "scripts": {
-    "build": "cd pixelence-mri-system && npm install && npm run build",
-    "dev": "cd pixelence-mri-system && npm run dev",
-    "lint": "cd pixelence-mri-system && npm run lint"
+    "build": "turbo run build",
+    "dev:web": "cd pixelence-mri-system && npm run dev",
+    "dev:mobile": "cd pixelence-mobile && npx expo start",
+    "lint": "turbo run lint"
   },
+  "workspaces": [
+    "pixelence-mri-system",
+    "pixelence-mobile",
+    "convex"
+  ],
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "convex": "^1.31.7",
