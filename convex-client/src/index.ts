@@ -39,6 +39,9 @@ export const api = {
         },
         getAllReports: async () => {
             return await client.query(anyApi.reports.getAllReports, {});
+        },
+        getReportById: async (args: { reportId: string }) => {
+            return await client.query(anyApi.reports.getReportById, args);
         }
     },
     jobs: {
@@ -46,6 +49,9 @@ export const api = {
             const jobs = await client.query(anyApi.jobs.getRecentJobs, args || {});
             const jobsArray = (Array.isArray(jobs) ? jobs : (jobs as any)?.jobs) || [];
             return (args?.limit ? jobsArray.slice(0, args.limit) : jobsArray) as unknown[];
+        },
+        getJobById: async (args: { jobId: string }) => {
+            return await client.query(anyApi.jobs.getJobById, args);
         }
     }
 };

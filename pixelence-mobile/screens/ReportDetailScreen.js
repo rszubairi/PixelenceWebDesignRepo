@@ -1,20 +1,25 @@
-import React from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  ScrollView, 
-  TouchableOpacity, 
-  SafeAreaView 
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
 
-import { useQuery } from 'convex/react';
 import { api } from '@pixelence/convex';
-import { ActivityIndicator } from 'react-native';
 
 export default function ReportDetailScreen({ route, navigation }) {
   const { reportId } = route.params;
-  const report = useQuery(api.reports.getReportById, { reportId });
+  const [report, setReport] = useState(undefined);
+
+  useEffect(() => {
+    api.reports.getReportById({ reportId })
+      .then(data => setReport(data))
+      .catch(() => setReport(null));
+  }, [reportId]);
 
   if (report === undefined) {
     return (

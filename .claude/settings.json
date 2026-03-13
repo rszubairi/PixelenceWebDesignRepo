@@ -8,6 +8,9 @@
       "Bash(# Check Convex global config / auth files find \"\"$USERPROFILE/.convex\"\" -type f)",
       "Read(//c/Users/rszub/.convex/**)",
       "Bash(npx expo install:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\rszub\\OneDrive\\Documents\\PixelenceWebDesignRepo\\pixelence-mri-system\\pages\\api\\dicom"
     ]
   }
 }

@@ -1,223 +1,232 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  TouchableOpacity, 
-  SafeAreaView, 
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
   ActivityIndicator,
   ScrollView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-
-import { useQuery } from 'convex/react';
 import { api } from '@pixelence/convex';
 
 const { width } = Dimensions.get('window');
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || '';
 
 export default function DicomViewerScreen({ route, navigation }) {
   const { jobId } = route.params;
-  const job = useQuery(api.jobs.getJobById, { jobId });
+  const [job, setJob]       = useState(undefined);
+  const [study, setStudy]   = useState(null);
+  const [activeSeq, setActiveSeq] = useState(0);
+  const [slice, setSlice]   = useState(1);
   const [loading, setLoading] = useState(true);
+  const webViewRef = useRef(null);
 
-  if (job === undefined) {
-      return (
-          <View style={styles.container}>
-              <ActivityIndicator size="large" color="#3B82F6" />
-          </View>
-      );
+  // Fetch job metadata from Convex
+  useEffect(() => {
+    api.jobs.getJobById({ jobId })
+      .then(data => setJob(data))
+      .catch(() => setJob(null));
+  }, [jobId]);
+
+  // Fetch DICOM study metadata from the mock API
+  useEffect(() => {
+    fetch(`${API_BASE}/api/dicom/${jobId}`)
+      .then(r => r.json())
+      .then(data => { setStudy(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [jobId]);
+
+  if (job === undefined || loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+        <Text style={styles.loadingText}>Loading Clinical Viewer...</Text>
+      </View>
+    );
   }
 
   if (job === null) {
-      return (
-          <View style={styles.container}>
-              <Text style={{color: '#fff', textAlign: 'center'}}>Job not found</Text>
-          </View>
-      );
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: '#fff', textAlign: 'center' }}>Job not found</Text>
+      </View>
+    );
   }
 
-  // The HTML for the WebView that will handle DICOM rendering
-  // This allows us to reuse the sophisticated web-based DICOM logic 
-  // exactly as requested.
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <style>
-          body { 
-            margin: 0; 
-            padding: 0; 
-            background: #000; 
-            color: #fff; 
-            font-family: -apple-system, system-ui; 
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-          }
-          #viewer-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justifyContent: center;
-            position: relative;
-          }
-          canvas {
-            max-width: 100%;
-            max-height: 100%;
-            image-rendering: pixelated;
-          }
-          .label {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.6);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-          }
-          .controls {
-            padding: 20px;
-            display: flex;
-            justifyContent: center;
-            gap: 15px;
-            background: #111;
-          }
-          button {
-            background: #3B82F6;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-          }
-        </style>
-      </head>
-      <body>
-        <div id="viewer-container">
-          <canvas id="dicomCanvas"></canvas>
-          <div id="image-label" class="label">T1 - Sequence 1</div>
-        </div>
-        
-        <script>
-          const canvas = document.getElementById('dicomCanvas');
-          const ctx = canvas.getContext('2d');
-          
-          // Simulation of DICOM rendering logic from web project
-          // In a real implementation, we would load dicom-parser here
-          function drawMockDicom(type) {
-            canvas.width = 512;
-            canvas.height = 512;
-            
-            // Draw background
-            ctx.fillStyle = '#111';
-            ctx.fillRect(0, 0, 512, 512);
-            
-            // Draw mock MRI brain slice
-            ctx.strokeStyle = '#555';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.ellipse(256, 256, 180, 220, 0, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            // Add some "anatomy"
-            ctx.fillStyle = '#333';
-            ctx.beginPath();
-            ctx.ellipse(256, 256, 150, 200, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Text simulation
-            ctx.fillStyle = '#888';
-            ctx.font = '14px Arial';
-            ctx.fillText('PIXELENCE CLINICAL VIEWER', 20, 40);
-            ctx.fillText('STUDY ID: ' + '${jobId}', 20, 60);
-            
-            document.getElementById('image-label').innerText = type + ' - Sequence';
-          }
-          
-          let currentIdx = 0;
-          const sequences = ['T1', 'T2', 'FLAIR', 'T1C'];
-          
-          drawMockDicom(sequences[currentIdx]);
-          
-          // Listen for messages from React Native
-          window.addEventListener('message', (event) => {
-            if (event.data === 'next') {
-              currentIdx = (currentIdx + 1) % sequences.length;
-              drawMockDicom(sequences[currentIdx]);
-            } else if (event.data === 'prev') {
-              currentIdx = (currentIdx - 1 + sequences.length) % sequences.length;
-              drawMockDicom(sequences[currentIdx]);
-            }
-          });
-        </script>
-      </body>
-    </html>
-  `;
+  const sequences    = study?.sequences || [{ name: 'T1', totalSlices: 20 }];
+  const currentSeq   = sequences[activeSeq] || sequences[0];
+  const totalSlices  = currentSeq?.totalSlices || 20;
+  const imageUrl     = `${API_BASE}/api/dicom/${jobId}/image?sequence=${currentSeq.name}&slice=${slice}`;
 
-  const webViewRef = useRef(null);
+  // Build the WebView HTML — loads the SVG image directly via <img> tag
+  const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, system-ui;
+      color: #fff;
+    }
+    #viewer {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #dicom-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    #spinner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      font-size: 13px;
+      color: #94A3B8;
+      letter-spacing: 1px;
+    }
+    #slice-bar {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.65);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      color: #ccc;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewer">
+    <div id="spinner">LOADING IMAGE...</div>
+    <img id="dicom-img" src="" style="display:none"/>
+    <div id="slice-bar">SL 1 / 20</div>
+  </div>
+  <script>
+    const img      = document.getElementById('dicom-img');
+    const spinner  = document.getElementById('spinner');
+    const sliceBar = document.getElementById('slice-bar');
+    let state = { url: '', seq: 'T1', slice: 1, total: 20 };
 
-  const handleNext = () => {
-    webViewRef.current.postMessage('next');
+    function load(data) {
+      state = { ...state, ...data };
+      spinner.style.display = 'flex';
+      img.style.display = 'none';
+      img.src = state.url;
+      sliceBar.textContent = state.seq + '  |  SL ' + state.slice + ' / ' + state.total;
+    }
+
+    img.onload  = () => { spinner.style.display = 'none'; img.style.display = 'block'; };
+    img.onerror = () => { spinner.textContent = 'IMAGE LOAD ERROR'; };
+
+    document.addEventListener('message', e => { try { load(JSON.parse(e.data)); } catch(_){} });
+    window.addEventListener('message',   e => { try { load(JSON.parse(e.data)); } catch(_){} });
+
+    // Initial load
+    load({ url: '${imageUrl}', seq: '${currentSeq.name}', slice: ${slice}, total: ${totalSlices} });
+  </script>
+</body>
+</html>`;
+
+  const sendToWebView = (newSlice, newSeqIdx) => {
+    const seq  = sequences[newSeqIdx] || currentSeq;
+    const url  = `${API_BASE}/api/dicom/${jobId}/image?sequence=${seq.name}&slice=${newSlice}`;
+    const msg  = JSON.stringify({ url, seq: seq.name, slice: newSlice, total: seq.totalSlices });
+    webViewRef.current?.postMessage(msg);
   };
 
-  const handlePrev = () => {
-    webViewRef.current.postMessage('prev');
+  const handleNextSlice = () => {
+    const next = slice < totalSlices ? slice + 1 : 1;
+    setSlice(next);
+    sendToWebView(next, activeSeq);
+  };
+
+  const handlePrevSlice = () => {
+    const prev = slice > 1 ? slice - 1 : totalSlices;
+    setSlice(prev);
+    sendToWebView(prev, activeSeq);
+  };
+
+  const handleSequenceChange = (idx) => {
+    setActiveSeq(idx);
+    setSlice(1);
+    sendToWebView(1, idx);
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButtonText}>✕ Close</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Clinical Image Viewer</Text>
-        <TouchableOpacity style={styles.shareButton}>
-           <Text style={styles.shareText}>Share</Text>
-        </TouchableOpacity>
+        <Text style={styles.shareText}>{job.studyType || 'MRI'}</Text>
       </View>
 
+      {/* WebView image area */}
       <View style={styles.viewerContainer}>
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
           source={{ html: htmlContent }}
           style={styles.webview}
-          onLoadEnd={() => setLoading(false)}
+          mixedContentMode="always"
+          allowUniversalAccessFromFileURLs
         />
-        {loading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#3B82F6" />
-            <Text style={styles.loadingText}>Initializing Clinical Viewer...</Text>
-          </View>
-        )}
       </View>
 
-      {/* Control Panel */}
+      {/* Controls */}
       <View style={styles.controls}>
         <View style={styles.infoRow}>
           <Text style={styles.infoText}>Patient: {job.patientId}</Text>
-          <Text style={styles.infoText}>Modality: {job.studyType}</Text>
+          <Text style={styles.infoText}>
+            Slice {slice}/{totalSlices}
+          </Text>
         </View>
+
+        {/* Slice navigation */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.controlButton} onPress={handlePrev}>
-            <Text style={styles.buttonText}>Previous Frame</Text>
+          <TouchableOpacity style={styles.controlButton} onPress={handlePrevSlice}>
+            <Text style={styles.buttonText}>◀ Prev Slice</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.controlButton, styles.primaryButton]} onPress={handleNext}>
-            <Text style={styles.primaryButtonText}>Next Frame</Text>
+          <TouchableOpacity style={[styles.controlButton, styles.primaryButton]} onPress={handleNextSlice}>
+            <Text style={styles.primaryButtonText}>Next Slice ▶</Text>
           </TouchableOpacity>
         </View>
-        
-        {/* Sequence Selector */}
+
+        {/* Sequence selector */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.thumbnailStrip}>
-          {[job.studyType, 'T2', 'FLAIR', 'T1C'].map((type, idx) => (
-            <TouchableOpacity key={idx} style={styles.thumbnail}>
-              <View style={styles.thumbPlaceholder}>
-                 <Text style={styles.thumbText}>{type}</Text>
-              </View>
+          {sequences.map((seq, idx) => (
+            <TouchableOpacity
+              key={seq.name}
+              style={[styles.thumbnail, activeSeq === idx && styles.thumbnailActive]}
+              onPress={() => handleSequenceChange(idx)}
+            >
+              <Text style={[styles.thumbText, activeSeq === idx && styles.thumbTextActive]}>
+                {seq.name}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -227,101 +236,56 @@ export default function DicomViewerScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
+  container:       { flex: 1, backgroundColor: '#000' },
+  loadingText:     { color: '#94A3B8', marginTop: 12, fontSize: 13 },
   header: {
-    padding: 20,
+    padding: 16,
+    paddingHorizontal: 20,
     backgroundColor: '#111',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth:1,
+    borderBottomWidth: 1,
     borderBottomColor: '#222',
   },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  title: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  shareText: {
-    color: '#3B82F6',
-    fontWeight: '600',
-  },
-  viewerContainer: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  webview: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: '#94A3B8',
-    marginTop: 15,
-    fontSize: 14,
-  },
+  backButtonText:  { color: '#fff', fontSize: 16, fontWeight: '600' },
+  title:           { color: '#fff', fontSize: 17, fontWeight: '700' },
+  shareText:       { color: '#3B82F6', fontWeight: '600', fontSize: 13 },
+  viewerContainer: { flex: 1, backgroundColor: '#000' },
+  webview:         { flex: 1, backgroundColor: 'transparent' },
   controls: {
     backgroundColor: '#111',
-    padding: 20,
+    padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#222',
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: 12,
   },
   infoText: {
     color: '#94A3B8',
-    fontSize: 12,
+    fontSize: 11,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 20,
-  },
+  buttonRow:       { flexDirection: 'row', gap: 10, marginBottom: 14 },
   controlButton: {
     flex: 1,
     backgroundColor: '#222',
-    padding: 15,
-    borderRadius: 12,
+    padding: 14,
+    borderRadius: 10,
     alignItems: 'center',
   },
-  primaryButton: {
-    backgroundColor: '#3B82F6',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-  },
-  thumbnailStrip: {
-    paddingVertical: 10,
-  },
+  primaryButton:   { backgroundColor: '#3B82F6' },
+  buttonText:      { color: '#fff', fontWeight: '600' },
+  primaryButtonText: { color: '#fff', fontWeight: '700' },
+  thumbnailStrip:  { paddingVertical: 4 },
   thumbnail: {
-    marginRight: 10,
-  },
-  thumbPlaceholder: {
-    width: 60,
-    height: 60,
+    marginRight: 8,
+    width: 58,
+    height: 44,
     backgroundColor: '#222',
     borderRadius: 8,
     justifyContent: 'center',
@@ -329,9 +293,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
   },
-  thumbText: {
-    color: '#94A3B8',
-    fontSize: 12,
-    fontWeight: '700',
-  }
+  thumbnailActive: { borderColor: '#3B82F6', backgroundColor: '#1D3A5F' },
+  thumbText:       { color: '#94A3B8', fontSize: 12, fontWeight: '700' },
+  thumbTextActive: { color: '#3B82F6' },
 });
