@@ -17,3 +17,8 @@ applications:
         paths:
           - node_modules/**/*
           - .next/cache/**/*
+      build:
+        exclude:
+          - 'pixelence-mobile/**'
+          - 'backend-ml/**'
+          - 'convex/**'
