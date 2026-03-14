@@ -8,8 +8,65 @@ import {
   SafeAreaView,
   ActivityIndicator
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 
 import { api } from '@pixelence/convex';
+
+// ── Client-side brain SVG generator (no server required) ─────────────────────
+function seededRandom(seed) {
+  let s = seed;
+  return () => { s = (s * 1664525 + 1013904223) & 0xffffffff; return (s >>> 0) / 0xffffffff; };
+}
+function toHex(val) { return Math.min(255, Math.max(0, Math.round(val))).toString(16).padStart(2, '0'); }
+function grey(val) { const h = toHex(val); return `#${h}${h}${h}`; }
+const SEQ_PARAMS = {
+  T1:    { brightness: 160, contrast: 0.85, label: 'T1-weighted',  accent: '#A0A0A0' },
+  T2:    { brightness: 210, contrast: 0.60, label: 'T2-weighted',  accent: '#C8C8C8' },
+  FLAIR: { brightness: 130, contrast: 1.10, label: 'FLAIR',        accent: '#888888' },
+};
+function makeBrainSvg(sequence, slice = 10, jobId = 'DEMO') {
+  const p = SEQ_PARAMS[sequence] || SEQ_PARAMS.T1;
+  const { brightness, contrast, label, accent } = p;
+  const totalSlices = 20;
+  const pos = (slice - 1) / (totalSlices - 1 || 1);
+  const radX = Math.round(140 * Math.sin(Math.PI * pos) + 20);
+  const radY = Math.round(170 * Math.sin(Math.PI * pos) + 15);
+  const rng  = seededRandom(slice * 31 + sequence.charCodeAt(0) * 7);
+  const skullVal = Math.round(brightness * 0.4 * contrast);
+  const brainVal = Math.round(brightness * 0.72 * contrast);
+  const wmVal    = Math.round(brightness * 0.90 * contrast);
+  const ventVal  = Math.round(brightness * 0.15 * contrast);
+  const gyri = Array.from({ length: 6 }, (_, i) => {
+    const angle = (i / 6) * Math.PI * 2 + rng() * 0.5;
+    const dist  = 40 + rng() * 70;
+    const gx    = 256 + Math.cos(angle) * dist;
+    const gy    = 256 + Math.sin(angle) * dist * 1.1;
+    const gr    = 18 + rng() * 28;
+    const gVal  = Math.round(wmVal * (0.85 + rng() * 0.3));
+    return `<ellipse cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" rx="${gr.toFixed(1)}" ry="${(gr * 0.75).toFixed(1)}" fill="${grey(gVal)}" opacity="0.7"/>`;
+  });
+  const showVent = pos > 0.3 && pos < 0.75;
+  const ventSvg = showVent
+    ? `<ellipse cx="240" cy="248" rx="18" ry="10" fill="${grey(ventVal)}"/><ellipse cx="272" cy="248" rx="18" ry="10" fill="${grey(ventVal)}"/><rect x="240" y="243" width="32" height="10" fill="${grey(ventVal)}"/>`
+    : '';
+  const falxSvg = pos > 0.2 && pos < 0.85
+    ? `<line x1="256" y1="${(256 - radY * 0.9).toFixed(0)}" x2="256" y2="${(256 + radY * 0.9).toFixed(0)}" stroke="${grey(ventVal)}" stroke-width="3" opacity="0.5"/>`
+    : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="${grey(18)}"/>
+  <ellipse cx="256" cy="256" rx="${radX + 26}" ry="${radY + 22}" fill="${grey(skullVal)}" stroke="${grey(skullVal + 20)}" stroke-width="2"/>
+  <ellipse cx="256" cy="256" rx="${radX}" ry="${radY}" fill="${grey(brainVal)}"/>
+  ${gyri.join('\n  ')}${falxSvg}${ventSvg}
+  <rect x="6" y="468" width="140" height="22" rx="3" fill="rgba(0,0,0,0.6)"/>
+  <text x="12" y="483" font-family="monospace" font-size="12" font-weight="bold" fill="${accent}">${label}</text>
+  <rect x="496" y="0" width="8" height="512" fill="rgba(0,0,0,0.4)"/>
+  <rect x="496" y="${Math.round(pos * 512)}" width="8" height="24" rx="2" fill="${accent}"/></svg>`;
+}
+function makeThumbnailHtml(sequence, slice, jobId) {
+  const svg = makeBrainSvg(sequence, slice, jobId);
+  return `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"/><style>*{margin:0;padding:0}html,body{width:100%;height:100%;background:#000;overflow:hidden}svg{width:100%;height:100%}</style></head><body>${svg}</body></html>`;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function ReportDetailScreen({ route, navigation }) {
   const { reportId } = route.params;
@@ -98,15 +155,26 @@ export default function ReportDetailScreen({ route, navigation }) {
           <Text style={styles.sectionTitle}>Medical Imaging</Text>
           <View style={styles.imagingBox}>
             <View style={styles.imageThumbnails}>
-              {['T1', 'T2', 'FLAIR'].map((type, idx) => (
-                <View key={idx} style={styles.imagePreview}>
-                   <Text style={styles.previewText}>{type}</Text>
-                </View>
-              ))}
+              {['T1', 'T2', 'FLAIR'].map((seq, idx) => {
+                const dicomId = report.jobId || reportId;
+                return (
+                  <View key={idx} style={styles.imagePreview}>
+                    <WebView
+                      source={{ html: makeThumbnailHtml(seq, 10, dicomId) }}
+                      style={styles.thumbWebView}
+                      scrollEnabled={false}
+                      originWhitelist={['*']}
+                    />
+                    <View style={styles.thumbLabel} pointerEvents="none">
+                      <Text style={styles.previewText}>{seq}</Text>
+                    </View>
+                  </View>
+                );
+              })}
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.viewImagesButton}
-              onPress={() => navigation.navigate('DicomViewer', { jobId: report.jobId })}
+              onPress={() => navigation.navigate('DicomViewer', { jobId: report.jobId || reportId })}
             >
               <Text style={styles.viewImagesText}>Open Full DICOM Viewer</Text>
             </TouchableOpacity>
@@ -258,14 +326,27 @@ const styles = StyleSheet.create({
   imagePreview: {
     flex: 1,
     aspectRatio: 1,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#000',
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  thumbWebView: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  thumbLabel: {
+    position: 'absolute',
+    bottom: 4,
+    left: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
   },
   previewText: {
     color: '#94A3B8',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '700',
   },
   viewImagesButton: {
