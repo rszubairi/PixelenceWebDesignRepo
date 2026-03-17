@@ -8,8 +8,14 @@
  * @module
  */
 
-import type * as dist_index from "../dist/index.js";
-import type * as src_index from "../src/index.js";
+import type * as appointments from "../appointments.js";
+import type * as auth from "../auth.js";
+import type * as hospitals from "../hospitals.js";
+import type * as jobs from "../jobs.js";
+import type * as licenses from "../licenses.js";
+import type * as notifications from "../notifications.js";
+import type * as reports from "../reports.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -18,8 +24,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  "dist/index": typeof dist_index;
-  "src/index": typeof src_index;
+  appointments: typeof appointments;
+  auth: typeof auth;
+  hospitals: typeof hospitals;
+  jobs: typeof jobs;
+  licenses: typeof licenses;
+  notifications: typeof notifications;
+  reports: typeof reports;
+  users: typeof users;
 }>;
 
 /**

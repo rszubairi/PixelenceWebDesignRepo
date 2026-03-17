@@ -27,6 +27,8 @@ export default function Login() {
 
       // Redirect based on role
       const dashboardRoutes = {
+        'super-admin': '/dashboard/super-admin',
+        'hospital-admin': '/dashboard/hospital-admin',
         'doctor': '/dashboard/doctor',
         'radiologist': '/dashboard/radiologist',
         'radiographer': '/dashboard/radiographer',

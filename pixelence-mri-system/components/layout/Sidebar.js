@@ -12,6 +12,27 @@ const Sidebar = ({ userRole }) => {
   };
 
   const getNavigationItems = () => {
+    // Super admin has its own navigation — no common clinical items
+    if (userRole === 'super-admin') {
+      return [
+        { name: 'Overview', href: '/dashboard/super-admin', icon: 'home' },
+        { name: 'Hospitals', href: '/super-admin/hospitals', icon: 'office-building' },
+        { name: 'System Settings', href: '/settings/system', icon: 'cog' },
+      ];
+    }
+
+    // Hospital admin navigation
+    if (userRole === 'hospital-admin') {
+      return [
+        { name: 'Dashboard', href: '/dashboard/hospital-admin', icon: 'home' },
+        { name: 'Appointments', href: '/appointments', icon: 'calendar' },
+        { name: 'Reports', href: '/reports', icon: 'document-text' },
+        { name: 'Staff Users', href: '/settings/hospital-users', icon: 'users' },
+        { name: 'Hospital Settings', href: '/settings/hospital', icon: 'cog' },
+        { name: 'License', href: '/settings/license', icon: 'key' },
+      ];
+    }
+
     const commonItems = [
       { name: 'Dashboard', href: '/dashboard', icon: 'home' },
       { name: 'Appointments', href: '/appointments', icon: 'calendar' },
@@ -97,6 +118,11 @@ const Sidebar = ({ userRole }) => {
       photograph: (
         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+        </svg>
+      ),
+      'office-building': (
+        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9zM7 13h6v2H7v-2z" clipRule="evenodd" />
         </svg>
       ),
     };

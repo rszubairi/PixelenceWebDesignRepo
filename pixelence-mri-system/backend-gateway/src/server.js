@@ -16,6 +16,7 @@ const authRoutes = require('./routes/auth');
 const dicomRoutes = require('./routes/dicom');
 const jobsRoutes = require('./routes/jobs');
 const healthRoutes = require('./routes/health');
+const notificationRoutes = require('./routes/notifications');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -88,6 +89,7 @@ app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/dicom', dicomRoutes);
 app.use('/api/jobs', jobsRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

@@ -1,12 +1,19 @@
 // components/layout/Header.js
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useQuery } from 'convex/react';
+import { anyApi } from 'convex/server';
 import Notification from '../ui/Notification';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = ({ user }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const { logout } = useAuth();
+
+  const unreadCount = useQuery(
+    anyApi.notifications.getUnreadCount,
+    user?._id ? { userId: user._id } : 'skip'
+  ) || 0;
 
   const handleLogout = () => {
     logout();
@@ -41,15 +48,30 @@ const Header = ({ user }) => {
             </div>
           </div>
           <div className="flex items-center">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-            >
-              <span className="sr-only">View notifications</span>
-              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
+            {/* Notification Bell with live unread badge */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              >
+                <span className="sr-only">View notifications</span>
+                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <Notification
+                  onClose={() => setShowNotifications(false)}
+                  userId={user?._id}
+                />
+              )}
+            </div>
 
             <div className="ml-3 relative">
               <div>
@@ -61,14 +83,17 @@ const Header = ({ user }) => {
                   aria-haspopup="true"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
+                  <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs font-medium">
                     {user?.firstName?.charAt(0) || 'U'}
                   </div>
                 </button>
               </div>
             </div>
 
-            <div className="ml-3">
+            <div className="ml-3 flex items-center space-x-2">
+              <span className="text-xs text-gray-400 hidden sm:inline">
+                {user?.firstName} {user?.lastName}
+              </span>
               <button
                 onClick={handleLogout}
                 className="text-gray-500 hover:text-gray-700 text-sm font-medium"
@@ -79,10 +104,6 @@ const Header = ({ user }) => {
           </div>
         </div>
       </div>
-
-      {showNotifications && (
-        <Notification onClose={() => setShowNotifications(false)} />
-      )}
     </header>
   );
 };

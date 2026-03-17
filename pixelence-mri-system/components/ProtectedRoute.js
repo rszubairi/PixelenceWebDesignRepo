@@ -14,6 +14,8 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
       } else if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
         // Redirect to appropriate dashboard if role not allowed
         const dashboardRoutes = {
+          'super-admin': '/dashboard/super-admin',
+          'hospital-admin': '/dashboard/hospital-admin',
           'doctor': '/dashboard/doctor',
           'radiologist': '/dashboard/radiologist',
           'radiographer': '/dashboard/radiographer',
