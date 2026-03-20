@@ -24,7 +24,7 @@ export default function ReportsScreen({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.card}
-      onPress={() => navigation.navigate('ReportDetail', { reportId: item.reportId })}
+      onPress={() => navigation.navigate('ReportDetail', { reportId: item._id })}
     >
       <View style={styles.cardHeader}>
         <View>

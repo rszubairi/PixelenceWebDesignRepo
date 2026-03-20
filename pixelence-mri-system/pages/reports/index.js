@@ -1,85 +1,47 @@
 // pages/reports/index.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from '../../components/layout/Layout';
 import Table from '../../components/ui/Table';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
+import { useQuery } from 'convex/react';
+import { anyApi } from 'convex/server';
 
 const Reports = () => {
   const { user } = useAuth();
-  const [reports, setReports] = useState([]);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    // Mock data for reports
-    const mockReports = [
-      {
-        id: 'RPT-2023-001',
-        jobId: 'JOB-2023-001',
-        patientName: 'John Smith',
-        age: 45,
-        gender: 'Male',
-        status: 'Analysis Complete',
-        generatedDate: '2023-11-20T10:30:00',
-        approved: false,
-        priority: 'Normal',
-      },
-      {
-        id: 'RPT-2023-002',
-        jobId: 'JOB-2023-002',
-        patientName: 'Emily Johnson',
-        age: 32,
-        gender: 'Female',
-        status: 'Under Review',
-        generatedDate: '2023-11-21T14:45:00',
-        approved: false,
-        priority: 'High',
-      },
-      {
-        id: 'RPT-2023-003',
-        jobId: 'JOB-2023-003',
-        patientName: 'Michael Brown',
-        age: 58,
-        gender: 'Male',
-        status: 'Approved',
-        generatedDate: '2023-11-19T16:20:00',
-        approved: true,
-        priority: 'Normal',
-      },
-      {
-        id: 'RPT-2023-004',
-        jobId: 'JOB-2023-004',
-        patientName: 'Sarah Davis',
-        age: 27,
-        gender: 'Female',
-        status: 'Analysis Complete',
-        generatedDate: '2023-11-22T11:15:00',
-        approved: false,
-        priority: 'Low',
-      },
-      {
-        id: 'RPT-2023-005',
-        jobId: 'JOB-2023-005',
-        patientName: 'Robert Wilson',
-        age: 63,
-        gender: 'Male',
-        status: 'Approved',
-        generatedDate: '2023-11-18T13:40:00',
-        approved: true,
-        priority: 'High',
-      },
-    ];
-    setReports(mockReports);
-  }, []);
+  const reports = useQuery(anyApi.reports.getAllReports, {});
+  const appointments = useQuery(anyApi.appointments.getAllAppointments, {});
 
-  const filteredReports = reports.filter(report => {
+  // Build a lookup map from appointmentId -> appointment
+  const appointmentMap = React.useMemo(() => {
+    if (!appointments) return {};
+    return Object.fromEntries(appointments.map(a => [a._id, a]));
+  }, [appointments]);
+
+  // Enrich reports with patient data from appointments
+  const enrichedReports = React.useMemo(() => {
+    if (!reports) return [];
+    return reports.map(r => {
+      const appt = r.appointmentId ? appointmentMap[r.appointmentId] : null;
+      return {
+        ...r,
+        patientName: appt?.patientName || '—',
+        age: appt?.age || '—',
+        gender: appt?.gender || '—',
+      };
+    });
+  }, [reports, appointmentMap]);
+
+  const filteredReports = enrichedReports.filter(report => {
     const matchesFilter = filter === 'all' || report.status === filter;
-    const matchesSearch = report.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.jobId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      (report.patientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report._id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -87,9 +49,20 @@ const Reports = () => {
     return <div>Loading...</div>;
   }
 
+  if (reports === undefined) {
+    return (
+      <Layout user={user}>
+        <div className="py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   const columns = [
-    { key: 'id', label: 'Report ID' },
-    { key: 'jobId', label: 'Job ID' },
+    { key: '_id', label: 'Report ID', format: (id) => id.slice(-8).toUpperCase() },
     { key: 'patientName', label: 'Patient Name' },
     { key: 'age', label: 'Age' },
     { key: 'gender', label: 'Gender' },
@@ -98,8 +71,8 @@ const Reports = () => {
         {status}
       </span>
     )},
-    { key: 'generatedDate', label: 'Generated Date', format: (date) => new Date(date).toLocaleDateString() },
-    { key: 'approved', label: 'Approved', format: (approved) => (
+    { key: 'createdAt', label: 'Generated Date', format: (date) => new Date(date).toLocaleDateString() },
+    { key: 'radiologistApproved', label: 'Approved', format: (approved) => (
       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
         approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
       }`}>
@@ -108,10 +81,10 @@ const Reports = () => {
     )},
     { key: 'actions', label: 'Actions', format: (_, row) => (
       <div className="flex space-x-2">
-        <Button size="sm" onClick={() => router.push(`/reports/${row.id}`)}>
+        <Button size="sm" onClick={() => router.push(`/reports/${row._id}`)}>
           View
         </Button>
-        {row.status === 'Analysis Complete' && (
+        {row.status === 'Analysis Complete' && row.jobId && (
           <Button size="sm" variant="secondary" onClick={() => router.push(`/images/${row.jobId}`)}>
             View Images
           </Button>
@@ -169,6 +142,7 @@ const Reports = () => {
                     <option value="Analysis Complete">Analysis Complete</option>
                     <option value="Under Review">Under Review</option>
                     <option value="Approved">Approved</option>
+                    <option value="Submitted">Submitted</option>
                   </select>
                 </div>
               </div>
