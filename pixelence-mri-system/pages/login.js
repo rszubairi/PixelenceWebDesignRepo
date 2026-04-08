@@ -22,7 +22,7 @@ export default function Login() {
     try {
       const user = await loginAction({ email, password });
 
-      // Update AuthContext state (also persists to localStorage)
+      // Update AuthContext state (also persists to secure cookies)
       login(user);
 
       // Redirect based on role

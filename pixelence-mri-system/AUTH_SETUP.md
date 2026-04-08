@@ -22,7 +22,7 @@ The Pixelence MRI System now includes a secure authentication system with:
 2. System finds user by email
 3. Password is verified against stored hash using bcrypt
 4. If valid, user data (without password) is returned
-5. User data is stored in localStorage
+5. User data is stored in Secure Cookies (SameSite: Strict)
 6. User is redirected to role-specific dashboard
 
 ## Default Admin User

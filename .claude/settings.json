@@ -7,7 +7,13 @@
       "Bash(grep:*)",
       "Bash(# Check Convex global config / auth files find \"\"$USERPROFILE/.convex\"\" -type f)",
       "Read(//c/Users/rszub/.convex/**)",
-      "Bash(npx expo install:*)"
+      "Bash(npx expo install:*)",
+      "Bash(pip install:*)",
+      "Bash(py -3.11 -m pip install --upgrade numpy matplotlib opencv-python)",
+      "Bash(python -c \":*)",
+      "Bash(py -3.11 diagnostic.py)",
+      "Bash(py -3.11 -c \":*)",
+      "Bash(python -m pip install \"numpy<2\" --user)"
     ],
     "additionalDirectories": [
       "c:\\Users\\rszub\\OneDrive\\Documents\\PixelenceWebDesignRepo\\pixelence-mri-system\\pages\\api\\dicom"

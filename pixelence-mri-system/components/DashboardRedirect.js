@@ -1,13 +1,15 @@
-// components/DashboardRedirect.js
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
+
+const COOKIE_NAME = 'pixelence_auth_session';
 
 const DashboardRedirect = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem('user');
+    // Get user data from secure cookie
+    const userData = Cookies.get(COOKIE_NAME);
     if (userData) {
       const user = JSON.parse(userData);
       // Redirect to role-specific dashboard
