@@ -231,6 +231,7 @@ const AppointmentDetails = () => {
   );
 };
 
+
 export default AppointmentDetails;
 
 export async function getServerSideProps() {

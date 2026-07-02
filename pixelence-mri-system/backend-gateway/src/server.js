@@ -16,6 +16,8 @@ const authRoutes = require('./routes/auth');
 const dicomRoutes = require('./routes/dicom');
 const jobsRoutes = require('./routes/jobs');
 const healthRoutes = require('./routes/health');
+const notificationRoutes = require('./routes/notifications');
+const qmsRoutes = require('./routes/qms');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -34,7 +36,7 @@ const config = {
   uploadDir: process.env.UPLOAD_DIR || path.join(__dirname, '../uploads'),
   maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 100 * 1024 * 1024, // 100MB
   corsOrigins: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') :
-    ['http://localhost:3000', 'http://127.0.0.1:3000']
+    ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3002', 'http://127.0.0.1:3002']
 };
 
 // Initialize Express app
@@ -88,6 +90,8 @@ app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/dicom', dicomRoutes);
 app.use('/api/jobs', jobsRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/qms', qmsRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

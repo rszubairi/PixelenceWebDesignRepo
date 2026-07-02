@@ -274,7 +274,7 @@ Each role has a customized dashboard displaying relevant metrics and recent acti
 ### 7.1 Authentication
 - Email/password login (mock implementation)
 - Role-based access control
-- Session management via localStorage (production: secure HTTP-only cookies)
+- Session management via secure cookies (SameSite: Strict, Secure: true)
 
 ### 7.2 Data Privacy
 - Patient information handling (HIPAA considerations)

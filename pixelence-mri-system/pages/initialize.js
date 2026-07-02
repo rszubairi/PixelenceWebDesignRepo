@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAction } from 'convex/react';
-import { api } from '../convex/_generated/api';
+import { api } from '../../convex/_generated/api';
 
 export default function Initialize() {
   const [status, setStatus] = useState('');

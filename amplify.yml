@@ -5,18 +5,20 @@ applications:
       phases:
         preBuild:
           commands:
-            - nvm install 20
-            - nvm use 20
             - npm ci
         build:
           commands:
             - npm run build
-            - bash amplify-pack.sh
       artifacts:
-        baseDirectory: .amplify-hosting
+        baseDirectory: .next
         files:
           - '**/*'
       cache:
         paths:
-          - .next/cache/**/*
           - node_modules/**/*
+          - .next/cache/**/*
+      build:
+        exclude:
+          - 'pixelence-mobile/**'
+          - 'backend-ml/**'
+          - 'convex/**'

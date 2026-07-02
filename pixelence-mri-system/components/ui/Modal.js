@@ -1,13 +1,16 @@
 // components/ui/Modal.js
+// Updated for @headlessui/react v2: Transition.Root → Transition, Transition.Child → TransitionChild,
+// Dialog.Overlay removed (replaced with a plain div backdrop).
 import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 
 const Modal = ({ title, children, onClose, open = true }) => {
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition show={open} as={Fragment}>
       <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" onClose={onClose}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <Transition.Child
+          {/* Backdrop */}
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
@@ -16,14 +19,15 @@ const Modal = ({ title, children, onClose, open = true }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-          </Transition.Child>
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" />
+          </TransitionChild>
 
           <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
             &#8203;
           </span>
 
-          <Transition.Child
+          {/* Modal panel */}
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -36,9 +40,9 @@ const Modal = ({ title, children, onClose, open = true }) => {
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                    <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
+                    <DialogTitle as="h3" className="text-lg leading-6 font-medium text-gray-900">
                       {title}
-                    </Dialog.Title>
+                    </DialogTitle>
                     <div className="mt-2">
                       {children}
                     </div>
@@ -46,10 +50,10 @@ const Modal = ({ title, children, onClose, open = true }) => {
                 </div>
               </div>
             </div>
-          </Transition.Child>
+          </TransitionChild>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition>
   );
 };
 

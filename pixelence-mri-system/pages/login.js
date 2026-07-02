@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAction } from 'convex/react';
-import { api } from '../convex/_generated/api';
+import { api } from '../../convex/_generated/api';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
@@ -22,11 +22,13 @@ export default function Login() {
     try {
       const user = await loginAction({ email, password });
 
-      // Update AuthContext state (also persists to localStorage)
+      // Update AuthContext state (also persists to secure cookies)
       login(user);
 
       // Redirect based on role
       const dashboardRoutes = {
+        'super-admin': '/dashboard/super-admin',
+        'hospital-admin': '/dashboard/hospital-admin',
         'doctor': '/dashboard/doctor',
         'radiologist': '/dashboard/radiologist',
         'radiographer': '/dashboard/radiographer',

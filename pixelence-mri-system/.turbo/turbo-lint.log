@@ -1,0 +1,20 @@
+
+> pixelence-mri-system@0.1.0 lint
+> next lint
+
+? How would you like to configure ESLint? https://nextjs.org/docs/basic-features/eslint
+ ⚠ If you set up ESLint yourself, we recommend adding the Next.js ESLint plugin. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config
+[?25l❯  Strict (recommended)
+   Base
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path C:\Users\rszub\OneDrive\Documents\PixelenceWebDesignRepo\pixelence-mri-system
+npm error workspace pixelence-mri-system@0.1.0
+npm error location C:\Users\rszub\OneDrive\Documents\PixelenceWebDesignRepo\pixelence-mri-system
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c next lint
+npm notice
+npm notice New minor version of npm available! 11.7.0 -> 11.11.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.11.1
+npm notice To update run: npm install -g npm@11.11.1
+npm notice

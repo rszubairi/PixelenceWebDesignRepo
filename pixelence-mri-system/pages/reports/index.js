@@ -6,7 +6,7 @@ import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQuery } from 'convex/react';
-import { api } from '../../convex/_generated/api';
+import { anyApi } from 'convex/server';
 
 const Reports = () => {
   const { user } = useAuth();
@@ -14,26 +14,34 @@ const Reports = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  const reports = useQuery(api.reports.getAllReports) || [];
+  const reports = useQuery(anyApi.reports.getAllReports, {});
+  const appointments = useQuery(anyApi.appointments.getAllAppointments, {});
 
-  // Map Convex data to table-friendly format
-  const mappedReports = reports.map((report) => ({
-    id: report.reportId,
-    jobId: report.jobId,
-    patientName: report.patientName,
-    age: report.age,
-    gender: report.gender,
-    status: report.status,
-    generatedDate: new Date(report.createdAt).toISOString(),
-    approved: report.approved,
-    priority: report.priority,
-  }));
+  // Build a lookup map from appointmentId -> appointment
+  const appointmentMap = React.useMemo(() => {
+    if (!appointments) return {};
+    return Object.fromEntries(appointments.map(a => [a._id, a]));
+  }, [appointments]);
 
-  const filteredReports = mappedReports.filter(report => {
+  // Enrich reports with patient data from appointments
+  const enrichedReports = React.useMemo(() => {
+    if (!reports) return [];
+    return reports.map(r => {
+      const appt = r.appointmentId ? appointmentMap[r.appointmentId] : null;
+      return {
+        ...r,
+        patientName: appt?.patientName || '—',
+        age: appt?.age || '—',
+        gender: appt?.gender || '—',
+      };
+    });
+  }, [reports, appointmentMap]);
+
+  const filteredReports = enrichedReports.filter(report => {
     const matchesFilter = filter === 'all' || report.status === filter;
-    const matchesSearch = report.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.jobId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      (report.patientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report._id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -41,9 +49,20 @@ const Reports = () => {
     return <div>Loading...</div>;
   }
 
+  if (reports === undefined) {
+    return (
+      <Layout user={user}>
+        <div className="py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   const columns = [
-    { key: 'id', label: 'Report ID' },
-    { key: 'jobId', label: 'Job ID' },
+    { key: '_id', label: 'Report ID', format: (id) => id.slice(-8).toUpperCase() },
     { key: 'patientName', label: 'Patient Name' },
     { key: 'age', label: 'Age' },
     { key: 'gender', label: 'Gender' },
@@ -52,8 +71,8 @@ const Reports = () => {
         {status}
       </span>
     )},
-    { key: 'generatedDate', label: 'Generated Date', format: (date) => new Date(date).toLocaleDateString() },
-    { key: 'approved', label: 'Approved', format: (approved) => (
+    { key: 'createdAt', label: 'Generated Date', format: (date) => new Date(date).toLocaleDateString() },
+    { key: 'radiologistApproved', label: 'Approved', format: (approved) => (
       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
         approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
       }`}>
@@ -62,12 +81,14 @@ const Reports = () => {
     )},
     { key: 'actions', label: 'Actions', format: (_, row) => (
       <div className="flex space-x-2">
-        <Button size="sm" onClick={() => router.push(`/reports/${row.id}`)}>
+        <Button size="sm" onClick={() => router.push(`/reports/${row._id}`)}>
           View
         </Button>
-        <Button size="sm" variant="secondary" onClick={() => router.push(`/images/${row.jobId}`)}>
-          View Images
-        </Button>
+        {row.status === 'Analysis Complete' && row.jobId && (
+          <Button size="sm" variant="secondary" onClick={() => router.push(`/images/${row.jobId}`)}>
+            View Images
+          </Button>
+        )}
       </div>
     )},
   ];
@@ -121,6 +142,7 @@ const Reports = () => {
                     <option value="Analysis Complete">Analysis Complete</option>
                     <option value="Under Review">Under Review</option>
                     <option value="Approved">Approved</option>
+                    <option value="Submitted">Submitted</option>
                   </select>
                 </div>
               </div>

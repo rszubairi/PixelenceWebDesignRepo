@@ -149,6 +149,7 @@ const ImageViewer = () => {
   );
 };
 
+
 export default ImageViewer;
 
 export async function getServerSideProps() {
