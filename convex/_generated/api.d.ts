@@ -33,6 +33,7 @@ import type * as qms_traceability from "../qms/traceability.js";
 import type * as qms_training from "../qms/training.js";
 import type * as qms_trainingGate from "../qms/trainingGate.js";
 import type * as qms_seed from "../qms/seed.js";
+import type * as qms_seedInternal from "../qms/seedInternal.js";
 
 import type {
   ApiFromModules,
@@ -66,6 +67,7 @@ declare const fullApi: ApiFromModules<{
   "qms/training": typeof qms_training;
   "qms/trainingGate": typeof qms_trainingGate;
   "qms/seed": typeof qms_seed;
+  "qms/seedInternal": typeof qms_seedInternal;
 }>;
 
 /**
