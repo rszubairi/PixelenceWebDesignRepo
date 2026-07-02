@@ -1,6 +1,7 @@
+"use node";
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { api } from "./_generated/api";
 
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
