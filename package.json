@@ -5,11 +5,13 @@
   "scripts": {
     "build": "turbo run build",
     "dev:web": "cd pixelence-mri-system && npm run dev",
+    "dev:qms": "cd pixelence-qms && npm run dev",
     "dev:mobile": "cd pixelence-mobile && npx expo start",
     "lint": "turbo run lint"
   },
   "workspaces": [
     "pixelence-mri-system",
+    "pixelence-qms",
     "convex-client"
   ],
   "dependencies": {
