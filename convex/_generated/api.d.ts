@@ -20,6 +20,8 @@ import type * as qms_audit from "../qms/audit.js";
 import type * as qms_auditTrail from "../qms/auditTrail.js";
 import type * as qms_capa from "../qms/capa.js";
 import type * as qms_changeRequests from "../qms/changeRequests.js";
+import type * as qms_demoSeed from "../qms/demoSeed.js";
+import type * as qms_demoSeedInternal from "../qms/demoSeedInternal.js";
 import type * as qms_dhf from "../qms/dhf.js";
 import type * as qms_documents from "../qms/documents.js";
 import type * as qms_pms from "../qms/pms.js";
@@ -55,6 +57,8 @@ declare const fullApi: ApiFromModules<{
   "qms/auditTrail": typeof qms_auditTrail;
   "qms/capa": typeof qms_capa;
   "qms/changeRequests": typeof qms_changeRequests;
+  "qms/demoSeed": typeof qms_demoSeed;
+  "qms/demoSeedInternal": typeof qms_demoSeedInternal;
   "qms/dhf": typeof qms_dhf;
   "qms/documents": typeof qms_documents;
   "qms/pms": typeof qms_pms;
