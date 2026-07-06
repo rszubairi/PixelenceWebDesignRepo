@@ -10,7 +10,7 @@ export const list = query({
     let audits = await ctx.db.query("qms_audits").collect();
     if (status) audits = audits.filter((a) => a.status === status);
     if (type) audits = audits.filter((a) => a.type === type);
-    return audits.sort((a, b) => b.targetDate.localeCompare(a.targetDate));
+    return audits.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

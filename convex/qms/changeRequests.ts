@@ -7,7 +7,7 @@ export const list = query({
   handler: async (ctx, { status }) => {
     let crs = await ctx.db.query("qms_change_requests").collect();
     if (status) crs = crs.filter((c) => c.status === status);
-    return crs.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return crs.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

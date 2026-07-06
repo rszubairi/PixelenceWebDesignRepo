@@ -9,7 +9,7 @@ export const listProjects = query({
   handler: async (ctx, { status }) => {
     let projects = await ctx.db.query("qms_dhf_projects").collect();
     if (status) projects = projects.filter((p) => p.status === status);
-    return projects.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return projects.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

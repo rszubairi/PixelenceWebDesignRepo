@@ -14,7 +14,7 @@ export const list = query({
     let docs = await ctx.db.query("qms_documents").collect();
     if (type) docs = docs.filter((d) => d.type === type);
     if (status) docs = docs.filter((d) => d.status === status);
-    return docs.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return docs.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

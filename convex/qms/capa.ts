@@ -10,7 +10,7 @@ export const list = query({
   handler: async (ctx, { status }) => {
     let capas = await ctx.db.query("qms_capas").collect();
     if (status) capas = capas.filter((c) => c.status === status);
-    return capas.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return capas.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

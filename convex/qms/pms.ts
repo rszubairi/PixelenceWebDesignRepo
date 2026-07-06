@@ -9,7 +9,7 @@ export const list = query({
   handler: async (ctx, { status }) => {
     let complaints = await ctx.db.query("qms_complaints").collect();
     if (status) complaints = complaints.filter((c) => c.status === status);
-    return complaints.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return complaints.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 
