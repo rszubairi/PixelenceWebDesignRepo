@@ -1,14 +1,27 @@
 // components/layout/Header.js
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useQuery } from 'convex/react';
 import { anyApi } from 'convex/server';
 import Notification from '../ui/Notification';
 import { useAuth } from '../../contexts/AuthContext';
 
+const DASHBOARD_ROUTES = {
+  'doctor': '/dashboard/doctor',
+  'radiologist': '/dashboard/radiologist',
+  'radiographer': '/dashboard/radiographer',
+  'finance-user': '/dashboard/finance-user',
+  'it-admin': '/dashboard/it-admin',
+  'hospital-admin': '/dashboard/hospital-admin',
+  'super-admin': '/dashboard/super-admin',
+};
+
 const Header = ({ user }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const { logout } = useAuth();
+  const router = useRouter();
 
   const unreadCount = useQuery(
     anyApi.notifications.getUnreadCount,
@@ -18,6 +31,30 @@ const Header = ({ user }) => {
   const handleLogout = () => {
     logout();
   };
+
+  const getNavItems = () => {
+    const dashboard = { name: 'Dashboard', href: DASHBOARD_ROUTES[user?.role] || '/login' };
+
+    // Super admin doesn't manage patient data — its own nav lives in the sidebar
+    if (user?.role === 'super-admin') {
+      return [
+        dashboard,
+        { name: 'Hospitals', href: '/super-admin/hospitals' },
+      ];
+    }
+
+    const items = [dashboard, { name: 'Appointments', href: '/appointments' }, { name: 'Reports', href: '/reports' }];
+
+    if (user?.role === 'finance-user' || user?.role === 'it-admin') {
+      items.push({ name: 'Billing', href: '/billing' });
+    }
+
+    return items;
+  };
+
+  const navItems = getNavItems();
+
+  const isActive = (href) => router.pathname === href || router.pathname.startsWith(href + '/');
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -33,18 +70,19 @@ const Header = ({ user }) => {
               />
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <a href="#" className="border-purple-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Dashboard
-              </a>
-              <a href="#" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Appointments
-              </a>
-              <a href="#" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Reports
-              </a>
-              <a href="#" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Billing
-              </a>
+              {navItems.map((item) => (
+                <Link key={item.name} href={item.href} legacyBehavior>
+                  <a
+                    className={`${
+                      isActive(item.href)
+                        ? 'border-purple-500 text-gray-900'
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                  >
+                    {item.name}
+                  </a>
+                </Link>
+              ))}
             </div>
           </div>
           <div className="flex items-center">

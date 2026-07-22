@@ -6,7 +6,7 @@ import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
 import { useQuery } from 'convex/react';
-import { anyApi } from 'convex/server';
+import { api } from '../../convex/_generated/api';
 
 const Reports = () => {
   const { user } = useAuth();
@@ -14,8 +14,9 @@ const Reports = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  const reports = useQuery(anyApi.reports.getAllReports, {});
-  const appointments = useQuery(anyApi.appointments.getAllAppointments, {});
+  const hospitalArgs = user?.role === 'super-admin' ? {} : (user?.hospitalId ? { hospitalId: user.hospitalId } : 'skip');
+  const reports = useQuery(api.reports.list, hospitalArgs);
+  const appointments = useQuery(api.appointments.list, hospitalArgs);
 
   // Build a lookup map from appointmentId -> appointment
   const appointmentMap = React.useMemo(() => {

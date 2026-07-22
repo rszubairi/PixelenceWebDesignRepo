@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useAction } from 'convex/react';
-import { api } from '../../convex/_generated/api';
+import { api } from '../convex/_generated/api';
 
 export default function InitializeUsers() {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
-  const initializeSampleUsers = useAction(api.initializeSampleUsers.initializeSampleUsers);
+  const initializeSampleUsers = useAction(api.auth.initializeSampleUsers);
+  const initializeSJMCAdmin = useAction(api.auth.initializeSJMCAdmin);
 
   const handleInitialize = async () => {
     setLoading(true);
@@ -14,10 +15,12 @@ export default function InitializeUsers() {
     setResults(null);
 
     try {
-      const result = await initializeSampleUsers();
+      const [sampleResult, sjmcResult] = await Promise.all([
+        initializeSampleUsers(),
+        initializeSJMCAdmin(),
+      ]);
       setStatus('success');
-      setResults(result);
-      console.log('Initialization result:', result);
+      setResults({ sampleResult, sjmcResult });
     } catch (err) {
       setStatus('error');
       console.error('Initialization error:', err);
@@ -47,48 +50,21 @@ export default function InitializeUsers() {
                     ✓ Sample users initialized successfully!
                   </h3>
                   <div className="mt-4 text-sm text-green-700">
-                    <p className="font-semibold mb-2">Summary:</p>
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>Total processed: {results.totalProcessed}</li>
-                      <li>Created: {results.created}</li>
-                      <li>Skipped: {results.skipped}</li>
-                      <li>Errors: {results.errors}</li>
-                    </ul>
-
-                    {results.results && results.results.length > 0 && (
-                      <div className="mt-4">
-                        <p className="font-semibold mb-2">Details:</p>
-                        <div className="space-y-2">
-                          {results.results.map((result, index) => (
-                            <div
-                              key={index}
-                              className={`p-2 rounded ${
-                                result.status === 'created'
-                                  ? 'bg-green-100'
-                                  : result.status === 'skipped'
-                                  ? 'bg-yellow-100'
-                                  : 'bg-red-100'
-                              }`}
-                            >
-                              <p className="font-mono text-xs">
-                                {result.email}: {result.status} - {result.message}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4 p-3 bg-green-100 rounded">
-                      <p className="font-semibold mb-2">Sample Users Created:</p>
+                    <div className="p-3 bg-green-100 rounded">
+                      <p className="font-semibold mb-2">General Sample Users (password: Click123*):</p>
                       <ul className="text-xs font-mono space-y-1">
-                        <li>john.smith@hospital.com - IT Administrator</li>
-                        <li>emily.johnson@hospital.com - Radiologist</li>
-                        <li>michael.brown@hospital.com - Finance User</li>
-                        <li>sarah.davis@hospital.com - Radiographer</li>
-                        <li>robert.wilson@hospital.com - Doctor</li>
+                        <li>doctor@pixelenceai.com - Doctor</li>
+                        <li>radiologist@pixelenceai.com - Radiologist</li>
+                        <li>radiographer@pixelenceai.com - Radiographer</li>
+                        <li>finance@pixelenceai.com - Finance User</li>
+                        <li>itadmin@pixelenceai.com - IT Admin</li>
                       </ul>
-                      <p className="mt-2 text-xs">All passwords: Click123*</p>
+                    </div>
+
+                    <div className="mt-3 p-3 bg-green-100 rounded">
+                      <p className="font-semibold mb-2">SJMC Hospital Admin:</p>
+                      <p className="text-xs font-mono">admin@sjmc.com.my - Click123*</p>
+                      <p className="mt-1 text-xs">{results.sjmcResult?.message}</p>
                     </div>
 
                     <a
@@ -134,8 +110,8 @@ export default function InitializeUsers() {
             <p className="font-semibold mb-2">What this does:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
               <li>Creates 5 sample users with different roles</li>
+              <li>Creates a hospital-admin account for the SJMC hospital</li>
               <li>All users will have password: Click123*</li>
-              <li>Users include: IT Admin, Radiologist, Finance User, Radiographer, Doctor</li>
               <li>Skips users that already exist</li>
             </ul>
           </div>

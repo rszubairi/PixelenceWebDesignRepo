@@ -17,7 +17,10 @@ const Appointments = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  const appointments = useQuery(api.appointments.getAllAppointments) || [];
+  const appointments = useQuery(
+    api.appointments.list,
+    user?.role === 'super-admin' ? {} : (user?.hospitalId ? { hospitalId: user.hospitalId } : 'skip')
+  ) || [];
   const createAppointment = useMutation(api.appointments.create);
 
   // Map Convex data to table-friendly format

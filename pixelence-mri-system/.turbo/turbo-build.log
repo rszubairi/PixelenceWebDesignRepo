@@ -31,43 +31,43 @@ info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/d
    Collecting build traces ...
 
 Route (pages)                              Size     First Load JS
-┌ ○ /                                      591 B           102 kB
+┌ ○ /                                      608 B           102 kB
 ├   /_app                                  0 B             102 kB
 ├ ○ /404                                   181 B           102 kB
 ├ ƒ /api/dicom/[jobId]                     0 B             102 kB
 ├ ƒ /api/dicom/[jobId]/image               0 B             102 kB
-├ ○ /appointments                          3.49 kB         135 kB
-├ ƒ /appointments/[id]                     2.05 kB         117 kB
+├ ○ /appointments                          3.53 kB         136 kB
+├ ƒ /appointments/[id]                     2.05 kB         118 kB
 ├ ○ /appointments/create                   1.58 kB         117 kB
 ├ ○ /billing                               2.8 kB          118 kB
-├ ○ /dashboard/doctor                      3.3 kB          118 kB
-├ ○ /dashboard/finance-user                3 kB            118 kB
+├ ○ /dashboard/doctor                      3.3 kB          119 kB
+├ ○ /dashboard/finance-user                3 kB            119 kB
 ├ ƒ /dashboard/hospital-admin              2.68 kB         118 kB
-├ ○ /dashboard/it-admin                    3.21 kB         118 kB
-├ ○ /dashboard/radiographer                2.4 kB          117 kB
-├ ○ /dashboard/radiologist                 3.01 kB         118 kB
-├ ƒ /dashboard/super-admin                 2.38 kB         117 kB
+├ ○ /dashboard/it-admin                    3.21 kB         119 kB
+├ ○ /dashboard/radiographer                2.4 kB          118 kB
+├ ○ /dashboard/radiologist                 3.01 kB         119 kB
+├ ƒ /dashboard/super-admin                 2.38 kB         118 kB
 ├ ƒ /images/[jobId]                        19 kB           134 kB
-├ ○ /images/upload                         2.43 kB         117 kB
+├ ○ /images/upload                         2.43 kB         118 kB
 ├ ○ /initialize                            1.33 kB         107 kB
 ├ ○ /initialize-appointments               1.39 kB         107 kB
 ├ ○ /initialize-reports                    1.36 kB         107 kB
-├ ○ /initialize-users                      1.67 kB         107 kB
+├ ○ /initialize-users                      1.56 kB         107 kB
 ├ ○ /login                                 1.6 kB          107 kB
-├ ○ /reports                               2.44 kB         118 kB
-├ ƒ /reports/[id]                          5.21 kB         120 kB
+├ ○ /reports                               2.52 kB         118 kB
+├ ƒ /reports/[id]                          5.21 kB         121 kB
 ├ ƒ /settings/hospital-users               3.83 kB         119 kB
-├ ○ /settings/license                      2.21 kB         117 kB
+├ ○ /settings/license                      2.21 kB         118 kB
 ├ ○ /settings/system                       1.85 kB         117 kB
-├ ○ /settings/users                        3.56 kB         135 kB
+├ ○ /settings/users                        3.56 kB         136 kB
 ├ ƒ /super-admin/hospitals                 1.97 kB         117 kB
-├ ƒ /super-admin/hospitals/[id]            4.13 kB         119 kB
+├ ƒ /super-admin/hospitals/[id]            4.13 kB         120 kB
 └ ƒ /super-admin/hospitals/new             2.73 kB         118 kB
 + First Load JS shared by all              108 kB
   ├ chunks/framework-9a60b6b11232a1b7.js   44.8 kB
   ├ chunks/main-ccadabbbc8cdd8de.js        34 kB
   ├ chunks/pages/_app-0ff9c48d3e223331.js  22 kB
-  └ other shared chunks (total)            7.2 kB
+  └ other shared chunks (total)            7.26 kB
 
 ○  (Static)   prerendered as static content
 ƒ  (Dynamic)  server-rendered on demand

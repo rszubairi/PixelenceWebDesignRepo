@@ -16,8 +16,10 @@ export default function Home() {
           'radiographer': '/dashboard/radiographer',
           'finance-user': '/dashboard/finance-user',
           'it-admin': '/dashboard/it-admin',
+          'hospital-admin': '/dashboard/hospital-admin',
+          'super-admin': '/dashboard/super-admin',
         };
-        router.push(dashboardRoutes[user.role] || '/dashboard');
+        router.push(dashboardRoutes[user.role] || '/login');
       } else {
         // Redirect to login if not authenticated
         router.push('/login');

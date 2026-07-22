@@ -31,6 +31,16 @@ export const getById = query({
   },
 });
 
+export const getByName = query({
+  args: { name: v.string() },
+  handler: async (ctx, { name }) => {
+    return await ctx.db
+      .query("hospitals")
+      .filter((q) => q.eq(q.field("name"), name))
+      .first();
+  },
+});
+
 export const update = mutation({
   args: {
     hospitalId: v.id("hospitals"),

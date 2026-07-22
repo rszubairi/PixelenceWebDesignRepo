@@ -82,6 +82,42 @@ export const initializeDefaultAdmin = action({
   },
 });
 
+export const initializeSJMCAdmin = action({
+  args: {},
+  handler: async (ctx) => {
+    let hospital = await ctx.runQuery(api.hospitals.getByName, { name: "SJMC" });
+
+    if (!hospital) {
+      const hospitalId = await ctx.runMutation(api.hospitals.create, {
+        name: "SJMC",
+        address: "2, Jalan SS 12/1a, Subang Jaya, 47500 Selangor, Malaysia",
+        contactEmail: "admin@sjmc.com.my",
+        contactPhone: "+60-3-5639-1212",
+      });
+      hospital = await ctx.runQuery(api.hospitals.getById, { hospitalId });
+    }
+
+    const email = "admin@sjmc.com.my";
+    const existing = await ctx.runQuery(api.users.getByEmail, { email });
+    if (existing) {
+      return { success: false, message: "SJMC admin already exists", email };
+    }
+
+    const passwordHash = await bcrypt.hash("Click123*", 10);
+    await ctx.runMutation(api.users.createInternal, {
+      email,
+      passwordHash,
+      firstName: "SJMC",
+      lastName: "Admin",
+      role: "hospital-admin",
+      hospitalId: hospital._id,
+      isActive: true,
+    });
+
+    return { success: true, message: "SJMC hospital-admin created", email };
+  },
+});
+
 export const initializeSampleUsers = action({
   args: {},
   handler: async (ctx) => {

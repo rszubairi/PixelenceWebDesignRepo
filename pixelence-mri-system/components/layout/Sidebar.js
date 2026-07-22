@@ -3,7 +3,17 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
-const Sidebar = ({ userRole }) => {
+const DASHBOARD_ROUTES = {
+  'doctor': '/dashboard/doctor',
+  'radiologist': '/dashboard/radiologist',
+  'radiographer': '/dashboard/radiographer',
+  'finance-user': '/dashboard/finance-user',
+  'it-admin': '/dashboard/it-admin',
+  'hospital-admin': '/dashboard/hospital-admin',
+  'super-admin': '/dashboard/super-admin',
+};
+
+const Sidebar = ({ userRole, collapsed = false, onToggle }) => {
   const router = useRouter();
 
   const isActive = (path) => {
@@ -28,13 +38,12 @@ const Sidebar = ({ userRole }) => {
         { name: 'Appointments', href: '/appointments', icon: 'calendar' },
         { name: 'Reports', href: '/reports', icon: 'document-text' },
         { name: 'Staff Users', href: '/settings/hospital-users', icon: 'users' },
-        { name: 'Hospital Settings', href: '/settings/hospital', icon: 'cog' },
         { name: 'License', href: '/settings/license', icon: 'key' },
       ];
     }
 
     const commonItems = [
-      { name: 'Dashboard', href: '/dashboard', icon: 'home' },
+      { name: 'Dashboard', href: DASHBOARD_ROUTES[userRole] || '/login', icon: 'home' },
       { name: 'Appointments', href: '/appointments', icon: 'calendar' },
       { name: 'Reports', href: '/reports', icon: 'document-text' },
     ];
@@ -54,10 +63,10 @@ const Sidebar = ({ userRole }) => {
         { name: 'Image Upload', href: '/images/upload', icon: 'upload' },
       ],
       'radiologist': [
-        { name: 'Review Queue', href: '/reports/review', icon: 'eye' },
+        { name: 'Review Queue', href: '/reports', icon: 'eye' },
       ],
       'doctor': [
-        { name: 'My Appointments', href: '/appointments/my', icon: 'calendar' },
+        { name: 'My Appointments', href: '/appointments', icon: 'calendar' },
       ],
     };
 
@@ -131,23 +140,41 @@ const Sidebar = ({ userRole }) => {
   };
 
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col">
+    <div className={`hidden md:flex md:flex-col transition-all duration-200 ${collapsed ? 'md:w-16' : 'md:w-64'}`}>
       <div className="flex flex-col flex-grow pt-5 bg-white overflow-y-auto border-r border-gray-200">
-        <div className="flex-grow mt-5 flex flex-col">
+        <div className={`px-2 ${collapsed ? 'flex justify-center' : 'flex justify-end'}`}>
+          <button
+            type="button"
+            onClick={onToggle}
+            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none"
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <svg
+              className={`h-5 w-5 transition-transform ${collapsed ? 'rotate-180' : ''}`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex-grow mt-2 flex flex-col">
           <nav className="flex-1 px-2 pb-4 space-y-1">
             {navigationItems.map((item) => (
               <Link key={item.name} href={item.href} legacyBehavior>
                 <a
+                  title={collapsed ? item.name : undefined}
                   className={`${
                     isActive(item.href)
                       ? 'bg-purple-50 border-purple-500 text-purple-700'
                       : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-800'
-                  } group flex items-center px-2 py-2 text-sm font-medium border-l-4 rounded-md`}
+                  } group flex items-center ${collapsed ? 'justify-center' : ''} px-2 py-2 text-sm font-medium border-l-4 rounded-md`}
                 >
-                  <span className="mr-3">
+                  <span className={collapsed ? '' : 'mr-3'}>
                     {getIcon(item.icon)}
                   </span>
-                  {item.name}
+                  {!collapsed && item.name}
                 </a>
               </Link>
             ))}
