@@ -90,14 +90,21 @@ const SAMPLE_PATIENTS = [
   { patientName: "Noraini Ismail", age: 50, gender: "Female", complaint: "Blurred vision and headache", causeOfReferral: "Suspected pituitary mass", referringPhysician: "Dr. Lim Bee Hoon", dicomFile: "09.dcm" },
 ];
 
+const DICOM_POOL_SIZE = 9;
+const LAYERS_PER_CASE = 4;
+
+// Cycle through the shared pool of demo DICOM files so each case gets a full
+// 4-layer (T1/T2/FLAIR/DSW) set, even though the pool only has 9 unique files.
+function dicomFilesForIndex(index: number) {
+  return Array.from({ length: LAYERS_PER_CASE }, (_, offset) => {
+    const fileNum = ((index + offset) % DICOM_POOL_SIZE) + 1;
+    return `/dicom-images/${String(fileNum).padStart(2, "0")}.dcm`;
+  });
+}
+
 export const seedAppointments = mutation({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db.query("appointments").collect();
-    if (existing.length > 0) {
-      return { message: "Appointments already exist, skipping seed.", count: 0 };
-    }
-
     let hospital = await ctx.db
       .query("hospitals")
       .filter((q) => q.eq(q.field("name"), "SJMC"))
@@ -115,6 +122,24 @@ export const seedAppointments = mutation({
         status: "active",
         createdAt: new Date().toISOString(),
       });
+    }
+
+    const existingJobs = await ctx.db
+      .query("jobs")
+      .withIndex("by_hospital", (q) => q.eq("hospitalId", hospitalId))
+      .collect();
+
+    if (existingJobs.length > 0) {
+      // Already seeded — upgrade existing jobs to the full 4-layer DICOM set.
+      for (let i = 0; i < existingJobs.length; i++) {
+        const dicomFiles = dicomFilesForIndex(i);
+        await ctx.db.patch(existingJobs[i]._id, {
+          dicomFiles,
+          imageCount: dicomFiles.length,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+      return { message: `Upgraded ${existingJobs.length} existing cases to multi-layer DICOM sets.`, count: existingJobs.length };
     }
 
     const now = new Date();
@@ -137,12 +162,14 @@ export const seedAppointments = mutation({
         createdAt: new Date().toISOString(),
       });
 
+      const dicomFiles = dicomFilesForIndex(i);
+
       await ctx.db.insert("jobs", {
         appointmentId,
         hospitalId,
         studyType: "Brain MRI",
-        dicomFiles: [`/dicom-images/${patient.dicomFile}`],
-        imageCount: 1,
+        dicomFiles,
+        imageCount: dicomFiles.length,
         status: "Scan Complete",
         priority: "Normal",
         createdAt: new Date().toISOString(),
