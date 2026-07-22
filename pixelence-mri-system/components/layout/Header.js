@@ -35,11 +35,13 @@ const Header = ({ user }) => {
   const getNavItems = () => {
     const dashboard = { name: 'Dashboard', href: DASHBOARD_ROUTES[user?.role] || '/login' };
 
-    // Super admin doesn't manage patient data — its own nav lives in the sidebar
     if (user?.role === 'super-admin') {
       return [
         dashboard,
         { name: 'Hospitals', href: '/super-admin/hospitals' },
+        { name: 'Appointments', href: '/appointments' },
+        { name: 'Reports', href: '/reports' },
+        { name: 'Billing', href: '/billing' },
       ];
     }
 

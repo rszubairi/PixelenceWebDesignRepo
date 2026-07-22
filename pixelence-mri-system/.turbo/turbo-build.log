@@ -47,7 +47,7 @@ Route (pages)                              Size     First Load JS
 ├ ○ /dashboard/radiographer                2.4 kB          118 kB
 ├ ○ /dashboard/radiologist                 3.01 kB         119 kB
 ├ ƒ /dashboard/super-admin                 2.38 kB         118 kB
-├ ƒ /images/[jobId]                        19 kB           134 kB
+├ ƒ /images/[jobId]                        19 kB           135 kB
 ├ ○ /images/upload                         2.43 kB         118 kB
 ├ ○ /initialize                            1.33 kB         107 kB
 ├ ○ /initialize-appointments               1.39 kB         107 kB

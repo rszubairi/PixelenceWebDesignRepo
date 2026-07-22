@@ -22,11 +22,14 @@ const Sidebar = ({ userRole, collapsed = false, onToggle }) => {
   };
 
   const getNavigationItems = () => {
-    // Super admin has its own navigation — no common clinical items
+    // Super admin oversees the whole system — sees everything across all hospitals
     if (userRole === 'super-admin') {
       return [
         { name: 'Overview', href: '/dashboard/super-admin', icon: 'home' },
         { name: 'Hospitals', href: '/super-admin/hospitals', icon: 'office-building' },
+        { name: 'Appointments', href: '/appointments', icon: 'calendar' },
+        { name: 'Reports', href: '/reports', icon: 'document-text' },
+        { name: 'Billing', href: '/billing', icon: 'credit-card' },
         { name: 'System Settings', href: '/settings/system', icon: 'cog' },
       ];
     }
