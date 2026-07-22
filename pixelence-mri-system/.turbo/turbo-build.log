@@ -1,0 +1,74 @@
+
+> pixelence-mri-system@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+  - Environments: .env.local
+
+   Linting and checking validity of types ...
+
+./pages/login.js
+62:13  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./pages/reports/[id].js
+53:6  Warning: React Hook React.useEffect has missing dependencies: 'doctorComments' and 'radiologistComments'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+320:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/imaging/DicomViewer.js
+26:6  Warning: React Hook useEffect has a missing dependency: 'loadDicomFiles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+26:7  Warning: React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Collecting page data ...
+   Generating static pages (0/21) ...
+   Generating static pages (5/21) 
+   Generating static pages (10/21) 
+   Generating static pages (15/21) 
+ ✓ Generating static pages (21/21)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (pages)                              Size     First Load JS
+┌ ○ /                                      608 B           102 kB
+├   /_app                                  0 B             102 kB
+├ ○ /404                                   181 B           102 kB
+├ ƒ /api/dicom/[jobId]                     0 B             102 kB
+├ ƒ /api/dicom/[jobId]/image               0 B             102 kB
+├ ○ /appointments                          3.53 kB         136 kB
+├ ƒ /appointments/[id]                     2.11 kB         118 kB
+├ ○ /appointments/create                   1.58 kB         117 kB
+├ ○ /billing                               2.8 kB          118 kB
+├ ○ /dashboard/doctor                      3.3 kB          119 kB
+├ ○ /dashboard/finance-user                3 kB            119 kB
+├ ƒ /dashboard/hospital-admin              2.68 kB         118 kB
+├ ○ /dashboard/it-admin                    3.21 kB         119 kB
+├ ○ /dashboard/radiographer                2.4 kB          118 kB
+├ ○ /dashboard/radiologist                 3.01 kB         119 kB
+├ ƒ /dashboard/super-admin                 2.38 kB         118 kB
+├ ƒ /images/[jobId]                        19 kB           135 kB
+├ ○ /images/upload                         2.43 kB         118 kB
+├ ○ /initialize                            1.33 kB         107 kB
+├ ○ /initialize-appointments               1.39 kB         107 kB
+├ ○ /initialize-reports                    1.36 kB         107 kB
+├ ○ /initialize-users                      1.56 kB         107 kB
+├ ○ /login                                 1.6 kB          107 kB
+├ ○ /reports                               2.52 kB         118 kB
+├ ƒ /reports/[id]                          5.21 kB         121 kB
+├ ƒ /settings/hospital-users               3.83 kB         119 kB
+├ ○ /settings/license                      2.21 kB         118 kB
+├ ○ /settings/system                       1.85 kB         117 kB
+├ ○ /settings/users                        3.56 kB         136 kB
+├ ƒ /super-admin/hospitals                 1.97 kB         117 kB
+├ ƒ /super-admin/hospitals/[id]            4.13 kB         120 kB
+└ ƒ /super-admin/hospitals/new             2.73 kB         118 kB
++ First Load JS shared by all              108 kB
+  ├ chunks/framework-9a60b6b11232a1b7.js   44.8 kB
+  ├ chunks/main-ccadabbbc8cdd8de.js        34 kB
+  ├ chunks/pages/_app-0ff9c48d3e223331.js  22 kB
+  └ other shared chunks (total)            7.26 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
