@@ -6,7 +6,6 @@ import Layout from '../../components/layout/Layout';
 import Button from '../../components/ui/Button';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../contexts/AuthContext';
-import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
 const ML_SERVICE_URL = process.env.NEXT_PUBLIC_ML_SERVICE_URL || 'http://localhost:8000';

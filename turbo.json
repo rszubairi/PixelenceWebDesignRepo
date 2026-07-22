@@ -4,8 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
-        "pixelence-mri-system/.next/**",
-        "pixelence-qms/.next/**",
+        ".next/**",
         "dist/**"
       ]
     },
