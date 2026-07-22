@@ -18,11 +18,11 @@ const Appointments = () => {
   const router = useRouter();
 
   const appointments = useQuery(api.appointments.getAllAppointments) || [];
-  const createAppointment = useMutation(api.appointments.createAppointment);
+  const createAppointment = useMutation(api.appointments.create);
 
   // Map Convex data to table-friendly format
   const mappedAppointments = appointments.map((appt) => ({
-    id: appt.appointmentId,
+    id: appt._id,
     patientName: appt.patientName,
     age: appt.age,
     gender: appt.gender,
@@ -41,9 +41,7 @@ const Appointments = () => {
 
   const handleCreateAppointment = async (formData) => {
     try {
-      const appointmentId = `JOB-2023-${String(appointments.length + 1).padStart(3, '0')}`;
       await createAppointment({
-        appointmentId,
         patientId: `PAT-${String(appointments.length + 1).padStart(3, '0')}`,
         patientName: formData.patientName,
         age: parseInt(formData.age, 10),
@@ -51,18 +49,8 @@ const Appointments = () => {
         complaint: formData.complaint,
         causeOfReferral: formData.causeOfReferral,
         referringPhysician: formData.referringPhysician,
-        institution: formData.institution,
-        doctorId: user?.userId || "U000002",
         scheduledDateTime: formData.scheduledDateTime,
-        status: "Scheduled",
-        type: "MRI",
-        priority: "Normal",
-        contactInfo: {
-          phone: "",
-          email: "",
-          emergencyContact: "",
-        },
-        medicalHistory: [],
+        hospitalId: user.hospitalId,
       });
       setShowCreateModal(false);
     } catch (err) {
@@ -174,7 +162,6 @@ const Appointments = () => {
               { name: 'complaint', label: 'Complaint Description', type: 'textarea', required: true },
               { name: 'causeOfReferral', label: 'Cause of Referral', type: 'text', required: true },
               { name: 'referringPhysician', label: 'Referring Physician Name', type: 'text', required: true },
-              { name: 'institution', label: 'Institution/Hospital Name', type: 'text', required: true },
               { name: 'scheduledDateTime', label: 'Scheduled Date and Time', type: 'datetime-local', required: true },
             ]}
             onSubmit={handleCreateAppointment}

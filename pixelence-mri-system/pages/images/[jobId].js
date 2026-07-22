@@ -8,21 +8,33 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
+const SEQUENCE_TYPES = ['T1', 'T2', 'FLAIR', 'DSW'];
+
 const ImageViewer = () => {
   const { user } = useAuth();
   const router = useRouter();
   const { jobId } = router.query;
 
-  const report = useQuery(
-    api.reports.getReportByJobId,
+  const job = useQuery(
+    api.jobs.getJobById,
     jobId ? { jobId } : "skip"
+  );
+
+  const appointment = useQuery(
+    api.appointments.getAppointmentById,
+    job?.appointmentId ? { id: job.appointmentId } : "skip"
+  );
+
+  const report = useQuery(
+    api.reports.getByJob,
+    job?._id ? { jobId: job._id } : "skip"
   );
 
   if (!user) {
     return <div>Loading...</div>;
   }
 
-  if (report === undefined) {
+  if (job === undefined) {
     return (
       <Layout user={user}>
         <div className="py-6">
@@ -36,17 +48,17 @@ const ImageViewer = () => {
     );
   }
 
-  if (report === null) {
+  if (job === null) {
     return (
       <Layout user={user}>
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center py-12">
-              <h2 className="text-lg font-medium text-gray-900">Report not found</h2>
-              <p className="mt-2 text-sm text-gray-600">No report found for Job ID &quot;{jobId}&quot;.</p>
+              <h2 className="text-lg font-medium text-gray-900">Job not found</h2>
+              <p className="mt-2 text-sm text-gray-600">No job found for ID &quot;{jobId}&quot;.</p>
               <div className="mt-4">
-                <Button onClick={() => router.push('/reports')}>
-                  Back to Reports
+                <Button onClick={() => router.push('/appointments')}>
+                  Back to Appointments
                 </Button>
               </div>
             </div>
@@ -56,6 +68,13 @@ const ImageViewer = () => {
     );
   }
 
+  const dicomFiles = job.dicomFiles || [];
+
+  const images = dicomFiles.map((path, index) => ({
+    id: `${job._id}-${index}`,
+    type: SEQUENCE_TYPES[index] || `Sequence ${index + 1}`,
+  }));
+
   return (
     <Layout user={user}>
       <div className="py-6">
@@ -64,16 +83,18 @@ const ImageViewer = () => {
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">DICOM Image Viewer</h1>
               <p className="mt-1 text-sm text-gray-600">
-                Job ID: {report.jobId} | Patient: {report.patientName}
+                Job ID: {job._id} {appointment ? `| Patient: ${appointment.patientName}` : ''}
               </p>
             </div>
             <div className="flex space-x-3">
               <Button variant="secondary" onClick={() => router.back()}>
                 Back
               </Button>
-              <Button onClick={() => router.push(`/reports/${report.reportId}`)}>
-                View Report
-              </Button>
+              {report && (
+                <Button onClick={() => router.push(`/reports/${report._id}`)}>
+                  View Report
+                </Button>
+              )}
             </div>
           </div>
 
@@ -81,64 +102,73 @@ const ImageViewer = () => {
             {/* DICOM Viewer */}
             <div className="lg:col-span-2 bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Medical Images</h2>
-              <DicomViewer images={report.images} dicomFile={report.dicomFile} />
+              <DicomViewer dicomFiles={dicomFiles} />
             </div>
 
             {/* Patient Information */}
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Patient Information</h2>
-              <dl className="space-y-3">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Name</dt>
-                  <dd className="text-sm text-gray-900">{report.patientName}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Age</dt>
-                  <dd className="text-sm text-gray-900">{report.age} years</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Gender</dt>
-                  <dd className="text-sm text-gray-900">{report.gender}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Complaint</dt>
-                  <dd className="text-sm text-gray-900">{report.complaint}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Exam Date</dt>
-                  <dd className="text-sm text-gray-900">
-                    {new Date(report.scheduledDateTime).toLocaleDateString()} at{' '}
-                    {new Date(report.scheduledDateTime).toLocaleTimeString()}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Status</dt>
-                  <dd className="text-sm text-gray-900">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      report.status === 'Analysis Complete' ? 'bg-green-100 text-green-800' :
-                      report.status === 'Under Review' ? 'bg-yellow-100 text-yellow-800' :
-                      report.status === 'Approved' ? 'bg-blue-100 text-blue-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {report.status}
-                    </span>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">DICOM File</dt>
-                  <dd className="text-sm text-gray-900">{report.dicomFile}</dd>
-                </div>
-              </dl>
+              {appointment ? (
+                <dl className="space-y-3">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Name</dt>
+                    <dd className="text-sm text-gray-900">{appointment.patientName}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Age</dt>
+                    <dd className="text-sm text-gray-900">{appointment.age} years</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Gender</dt>
+                    <dd className="text-sm text-gray-900">{appointment.gender}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Complaint</dt>
+                    <dd className="text-sm text-gray-900">{appointment.complaint}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Exam Date</dt>
+                    <dd className="text-sm text-gray-900">
+                      {appointment.scheduledDateTime && (
+                        <>
+                          {new Date(appointment.scheduledDateTime).toLocaleDateString()} at{' '}
+                          {new Date(appointment.scheduledDateTime).toLocaleTimeString()}
+                        </>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="text-sm text-gray-500">No patient details linked to this job.</p>
+              )}
+
+              <div className="mt-6">
+                <dt className="text-sm font-medium text-gray-500">Status</dt>
+                <dd className="text-sm text-gray-900">
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    job.status === 'Analysis Complete' ? 'bg-green-100 text-green-800' :
+                    job.status === 'Under Review' ? 'bg-yellow-100 text-yellow-800' :
+                    job.status === 'Completed' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {job.status}
+                  </span>
+                </dd>
+              </div>
 
               <div className="mt-6">
                 <h3 className="text-sm font-medium text-gray-900 mb-2">Image Series</h3>
                 <div className="space-y-2">
-                  {report.images.map((image, index) => (
-                    <div key={image.id} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Image {index + 1}</span>
-                      <span className="font-medium text-gray-900">{image.type}</span>
-                    </div>
-                  ))}
+                  {images.length === 0 ? (
+                    <p className="text-sm text-gray-500">No DICOM images uploaded yet.</p>
+                  ) : (
+                    images.map((image, index) => (
+                      <div key={image.id} className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600">Image {index + 1}</span>
+                        <span className="font-medium text-gray-900">{image.type}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -148,7 +178,6 @@ const ImageViewer = () => {
     </Layout>
   );
 };
-
 
 export default ImageViewer;
 

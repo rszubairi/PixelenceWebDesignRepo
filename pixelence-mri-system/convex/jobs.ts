@@ -38,16 +38,29 @@ export const getByAppointment = query({
   },
 });
 
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
 export const completeUpload = mutation({
   args: {
     jobId: v.id("jobs"),
-    dicomFiles: v.array(v.string()),
-    imageCount: v.number(),
+    storageIds: v.array(v.id("_storage")),
     studyType: v.optional(v.string()),
   },
-  handler: async (ctx, { jobId, dicomFiles, imageCount, studyType }) => {
+  handler: async (ctx, { jobId, storageIds, studyType }) => {
     const job = await ctx.db.get(jobId);
     if (!job) throw new Error("Job not found");
+
+    const dicomFiles = [];
+    for (const storageId of storageIds) {
+      const url = await ctx.storage.getUrl(storageId);
+      if (url) dicomFiles.push(url);
+    }
+    const imageCount = dicomFiles.length;
 
     await ctx.db.patch(jobId, {
       dicomFiles,

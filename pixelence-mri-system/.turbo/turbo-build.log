@@ -16,6 +16,7 @@
 
 ./components/imaging/DicomViewer.js
 26:6  Warning: React Hook useEffect has a missing dependency: 'loadDicomFiles'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+26:7  Warning: React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked.  react-hooks/exhaustive-deps
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
    Creating an optimized production build ...
@@ -35,8 +36,8 @@ Route (pages)                              Size     First Load JS
 ├ ○ /404                                   181 B           102 kB
 ├ ƒ /api/dicom/[jobId]                     0 B             102 kB
 ├ ƒ /api/dicom/[jobId]/image               0 B             102 kB
-├ ○ /appointments                          3.63 kB         135 kB
-├ ƒ /appointments/[id]                     2.02 kB         117 kB
+├ ○ /appointments                          3.49 kB         135 kB
+├ ƒ /appointments/[id]                     2.05 kB         117 kB
 ├ ○ /appointments/create                   1.58 kB         117 kB
 ├ ○ /billing                               2.8 kB          118 kB
 ├ ○ /dashboard/doctor                      3.3 kB          118 kB
@@ -46,8 +47,8 @@ Route (pages)                              Size     First Load JS
 ├ ○ /dashboard/radiographer                2.4 kB          117 kB
 ├ ○ /dashboard/radiologist                 3.01 kB         118 kB
 ├ ƒ /dashboard/super-admin                 2.38 kB         117 kB
-├ ƒ /images/[jobId]                        18.9 kB         134 kB
-├ ○ /images/upload                         2.2 kB          117 kB
+├ ƒ /images/[jobId]                        19 kB           134 kB
+├ ○ /images/upload                         2.43 kB         117 kB
 ├ ○ /initialize                            1.33 kB         107 kB
 ├ ○ /initialize-appointments               1.39 kB         107 kB
 ├ ○ /initialize-reports                    1.36 kB         107 kB
@@ -66,7 +67,7 @@ Route (pages)                              Size     First Load JS
   ├ chunks/framework-9a60b6b11232a1b7.js   44.8 kB
   ├ chunks/main-ccadabbbc8cdd8de.js        34 kB
   ├ chunks/pages/_app-0ff9c48d3e223331.js  22 kB
-  └ other shared chunks (total)            7.19 kB
+  └ other shared chunks (total)            7.2 kB
 
 ○  (Static)   prerendered as static content
 ƒ  (Dynamic)  server-rendered on demand

@@ -14,7 +14,12 @@ const AppointmentDetails = () => {
 
   const appointment = useQuery(
     api.appointments.getAppointmentById,
-    id ? { appointmentId: id } : "skip"
+    id ? { id } : "skip"
+  );
+
+  const job = useQuery(
+    api.jobs.getByAppointment,
+    appointment?._id ? { appointmentId: appointment._id } : "skip"
   );
 
   if (!user) {
@@ -63,16 +68,18 @@ const AppointmentDetails = () => {
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">Appointment Details</h1>
               <p className="mt-1 text-sm text-gray-600">
-                Appointment ID: {appointment.appointmentId}
+                Appointment ID: {appointment._id}
               </p>
             </div>
             <div className="flex space-x-3">
               <Button variant="secondary" onClick={() => router.back()}>
                 Back to Appointments
               </Button>
-              <Button onClick={() => router.push(`/images/${appointment.appointmentId}`)}>
-                View Images
-              </Button>
+              {job && (
+                <Button onClick={() => router.push(`/images/${job._id}`)}>
+                  View Images
+                </Button>
+              )}
             </div>
           </div>
 
