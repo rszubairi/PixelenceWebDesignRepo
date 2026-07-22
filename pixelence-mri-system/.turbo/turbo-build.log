@@ -37,7 +37,7 @@ Route (pages)                              Size     First Load JS
 ├ ƒ /api/dicom/[jobId]                     0 B             102 kB
 ├ ƒ /api/dicom/[jobId]/image               0 B             102 kB
 ├ ○ /appointments                          3.53 kB         136 kB
-├ ƒ /appointments/[id]                     2.05 kB         118 kB
+├ ƒ /appointments/[id]                     2.11 kB         118 kB
 ├ ○ /appointments/create                   1.58 kB         117 kB
 ├ ○ /billing                               2.8 kB          118 kB
 ├ ○ /dashboard/doctor                      3.3 kB          119 kB

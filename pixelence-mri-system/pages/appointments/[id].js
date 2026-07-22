@@ -187,21 +187,21 @@ const AppointmentDetails = () => {
                 <dl className="space-y-2">
                   <div>
                     <dt className="text-xs text-gray-500">Phone</dt>
-                    <dd className="text-sm text-gray-900">{appointment.contactInfo.phone || 'N/A'}</dd>
+                    <dd className="text-sm text-gray-900">{appointment.contactInfo?.phone || 'N/A'}</dd>
                   </div>
                   <div>
                     <dt className="text-xs text-gray-500">Email</dt>
-                    <dd className="text-sm text-gray-900">{appointment.contactInfo.email || 'N/A'}</dd>
+                    <dd className="text-sm text-gray-900">{appointment.contactInfo?.email || 'N/A'}</dd>
                   </div>
                   <div>
                     <dt className="text-xs text-gray-500">Emergency Contact</dt>
-                    <dd className="text-sm text-gray-900">{appointment.contactInfo.emergencyContact || 'N/A'}</dd>
+                    <dd className="text-sm text-gray-900">{appointment.contactInfo?.emergencyContact || 'N/A'}</dd>
                   </div>
                 </dl>
               </div>
 
               {/* Medical History */}
-              {appointment.medicalHistory.length > 0 && (
+              {Array.isArray(appointment.medicalHistory) && appointment.medicalHistory.length > 0 && (
                 <div className="bg-white shadow rounded-lg p-6">
                   <h3 className="text-sm font-medium text-gray-900 mb-3">Medical History</h3>
                   <ul className="space-y-1">
