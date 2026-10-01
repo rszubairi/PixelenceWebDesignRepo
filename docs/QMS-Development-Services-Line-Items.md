@@ -166,3 +166,42 @@ Total cost = hours × your blended rate.
 - The two source documents disagree on architecture. The .docx (v0.1) lists NestJS, PostgreSQL, MinIO and Temporal. The Markdown spec (v1.2, newer) specifies Convex, Convex Scheduler and an Express gateway. These line items follow v1.2. A NestJS/Postgres/Temporal build would add roughly 150 to 250 hours of backend infrastructure.
 - The roadmap phases (Core QMS, Design Control, Risk & CAPA, PMS & Audits, AI Automation) map to sections 1-5, 7, 6 and 8, 9-11, and 12 above.
 - Excluded: hosting and LLM usage costs, third-party licences, regulatory consulting, and external audit or notified-body fees.
+
+---
+
+## Pricing at RM 80/hour (excl. SST)
+
+| | Hours | Amount (RM) |
+|---|---:|---:|
+| Full scope (all 62 items incl. 10% PM) | 2,895 | 231,600 |
+| SST 8% on full scope | | 18,528 |
+| **Full scope incl. SST** | | **250,128** |
+
+### Phase 1 proposal: fits the RM 40,000 budget
+
+| # | Line item | Hours |
+|---|---|---:|
+| 2 | Monorepo setup, isolated Next.js QMS app, CI/CD | 40 |
+| 3 | Convex schema, indexes, validators | 48 |
+| 4 | Authentication, RBAC, IdP/SSO and MFA | 64 |
+| 5 | QMS portal shell and design system | 40 |
+| 7 | Electronic signature engine | 56 |
+| 8 | ESignatureModal UI | 24 |
+| 9 | Immutable audit trail helper and write-mutation wrapping | 40 |
+| 13 | Document lifecycle backend and versioning | 64 |
+| 16 | Document UI (list, detail, review/approval, history) | 56 |
+| | Development subtotal | 432 |
+| | Project management (10%) | 43 |
+| | **Phase 1 total** | **475** |
+
+| | Amount (RM) |
+|---|---:|
+| Phase 1: 475 hours at RM 80 | 38,000 |
+| Reserve for basic testing and handover (about 25 hours) | 2,000 |
+| **Phase 1 fixed price (excl. SST)** | **40,000** |
+| SST 8% | 3,200 |
+| **Phase 1 total incl. SST** | **43,200** |
+
+### Remaining scope (later phases)
+
+Remaining items cost about 2,420 hours (including PM), or about RM 193,600 before SST. These cover document control extras, training, traceability, risk, DHF, CAPA, suppliers, PMS, audits, AI Copilot, reporting and full validation.
